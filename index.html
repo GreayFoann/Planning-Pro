@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#3367D6">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js');
+      }
+    </script>
+    <meta charset="UTF-8">
+    <title>Planning Mobile - 35h</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Planning Mensuel - 35h</h1>
+    <div id="controls">
+        <button onclick="changeMonth(-1)">←</button>
+        <span id="monthLabel"></span>
+        <button onclick="changeMonth(1)">→</button>
+    </div>
+    <div id="calendar"></div>
+    <button id="exportBtn" onclick="exportCSV()">📤 Exporter CSV</button>
+    <script src="script.js"></script>
+</body>
+</html>
