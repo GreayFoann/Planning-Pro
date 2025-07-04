@@ -1,69 +1,68 @@
 
 const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
-const weekContainer = document.getElementById("week-container");
+const planning = document.getElementById("planning");
 
-function createDayBlock(day) {
-  const block = document.createElement("div");
-  block.className = "day-block";
+function creerJour(nom) {
+  const container = document.createElement("div");
+  container.className = "day";
 
-  block.innerHTML = \`
-    <h2>\${day}</h2>
-    <label>Matin :</label>
-    <div class="input-pair">
-      <input type="time" class="start1" placeholder="Début matin">
-      <input type="time" class="end1" placeholder="Fin matin">
+  container.innerHTML = `
+    <h2>${nom}</h2>
+    <div class="inputs">
+      <label>Matin :</label>
+      <input type="time" class="debutMatin" />
+      <input type="time" class="finMatin" />
+      <label>Après-midi :</label>
+      <input type="time" class="debutAprem" />
+      <input type="time" class="finAprem" />
     </div>
-    <label>Après-midi :</label>
-    <div class="input-pair">
-      <input type="time" class="start2" placeholder="Début après-midi">
-      <input type="time" class="end2" placeholder="Fin après-midi">
-    </div>
-    <div class="total-display">Total : <span class="day-total">0</span> h</div>
-  \`;
+    <div class="total">Total : <span class="totalJour">0</span> h</div>
+  `;
 
-  block.querySelectorAll("input").forEach(input => {
-    input.addEventListener("change", updateTotals);
+  container.querySelectorAll("input").forEach(input => {
+    input.addEventListener("change", calculerTotaux);
   });
 
-  return block;
+  return container;
 }
 
-function updateTotals() {
-  let totalWeek = 0;
+function diffHeures(h1, h2) {
+  if (!h1 || !h2) return 0;
+  const [h1h, h1m] = h1.split(":").map(Number);
+  const [h2h, h2m] = h2.split(":").map(Number);
+  return ((h2h * 60 + h2m) - (h1h * 60 + h1m)) / 60;
+}
 
-  document.querySelectorAll(".day-block").forEach(dayBlock => {
-    const s1 = dayBlock.querySelector(".start1").value;
-    const e1 = dayBlock.querySelector(".end1").value;
-    const s2 = dayBlock.querySelector(".start2").value;
-    const e2 = dayBlock.querySelector(".end2").value;
+function calculerTotaux() {
+  let totalSemaine = 0;
 
-    let total = 0;
-    if (s1 && e1) total += timeDiff(s1, e1);
-    if (s2 && e2) total += timeDiff(s2, e2);
+  document.querySelectorAll(".day").forEach(jour => {
+    const matinDebut = jour.querySelector(".debutMatin").value;
+    const matinFin = jour.querySelector(".finMatin").value;
+    const apremDebut = jour.querySelector(".debutAprem").value;
+    const apremFin = jour.querySelector(".finAprem").value;
 
-    dayBlock.querySelector(".day-total").textContent = total.toFixed(2);
-    totalWeek += total;
+    const matin = diffHeures(matinDebut, matinFin);
+    const aprem = diffHeures(apremDebut, apremFin);
+    const totalJour = matin + aprem;
+
+    jour.querySelector(".totalJour").textContent = totalJour.toFixed(2);
+    totalSemaine += totalJour;
   });
 
-  document.getElementById("totalHours").textContent = totalWeek.toFixed(2);
-  document.getElementById("remainingHours").textContent = (35 - totalWeek).toFixed(2);
-}
-
-function timeDiff(start, end) {
-  const [h1, m1] = start.split(":").map(Number);
-  const [h2, m2] = end.split(":").map(Number);
-  return (h2 + m2/60) - (h1 + m1/60);
+  document.getElementById("totalEffectue").textContent = totalSemaine.toFixed(2);
+  document.getElementById("reste").textContent = (35 - totalSemaine).toFixed(2);
 }
 
 function exportCSV() {
-  let csv = "Jour;Début matin;Fin matin;Début après-midi;Fin après-midi;Total\n";
-  document.querySelectorAll(".day-block").forEach((block, i) => {
-    const s1 = block.querySelector(".start1").value || "";
-    const e1 = block.querySelector(".end1").value || "";
-    const s2 = block.querySelector(".start2").value || "";
-    const e2 = block.querySelector(".end2").value || "";
-    const total = block.querySelector(".day-total").textContent || "0";
-    csv += \`\${jours[i]};\${s1};\${e1};\${s2};\${e2};\${total}\n\`;
+  let csv = "Jour;Début matin;Fin matin;Début après-midi;Fin après-midi;Total\\n";
+  document.querySelectorAll(".day").forEach((jour, i) => {
+    const s1 = jour.querySelector(".debutMatin").value || "";
+    const e1 = jour.querySelector(".finMatin").value || "";
+    const s2 = jour.querySelector(".debutAprem").value || "";
+    const e2 = jour.querySelector(".finAprem").value || "";
+    const total = jour.querySelector(".totalJour").textContent || "0";
+    csv += `${jours[i]};${s1};${e1};${s2};${e2};${total}\\n`;
   });
 
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -74,6 +73,7 @@ function exportCSV() {
   a.click();
 }
 
+// Génération des jours
 jours.forEach(jour => {
-  weekContainer.appendChild(createDayBlock(jour));
+  planning.appendChild(creerJour(jour));
 });
