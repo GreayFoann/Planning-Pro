@@ -1,30 +1,21 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#3367D6">
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js');
-      }
-    </script>
-    <meta charset="UTF-8">
-    <title>Planning Mobile - 35h</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planning Hebdo - 35h</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Planning Mensuel - 35h</h1>
-    <div id="controls">
-        <button onclick="changeMonth(-1)">←</button>
-        <span id="monthLabel"></span>
-        <button onclick="changeMonth(1)">→</button>
+  <main>
+    <h1>Planning Hebdomadaire</h1>
+    <div id="week-container"></div>
+    <div class="summary">
+      <p><strong>Total effectué :</strong> <span id="totalHours">0</span> h</p>
+      <p><strong>Heures restantes :</strong> <span id="remainingHours">35</span> h</p>
     </div>
-    <div id="calendar"></div>
-    <button id="exportBtn" onclick="exportCSV()">📤 Exporter CSV</button>
-    <script src="script.js"></script>
+    <button onclick="exportCSV()">📤 Exporter CSV</button>
+  </main>
+  <script src="script.js"></script>
 </body>
 </html>
