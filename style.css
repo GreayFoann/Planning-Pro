@@ -1,8 +1,7 @@
 body {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: Arial, sans-serif;
   padding: 1rem;
-  background: #f0f4f8;
-  color: #333;
+  background: #f9f9f9;
 }
 main {
   max-width: 600px;
@@ -10,7 +9,7 @@ main {
 }
 h1 {
   text-align: center;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   margin-bottom: 1rem;
 }
 .week-nav {
@@ -18,29 +17,21 @@ h1 {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-}
-.week-nav button {
-  font-size: 1.2rem;
-  padding: 0.5rem 1rem;
-  border: none;
-  background: #4a90e2;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
+  flex-wrap: wrap;
 }
 .week-nav span {
   font-weight: bold;
-  font-size: 1rem;
+  margin: 0.5rem;
 }
 .day {
-  background: white;
+  background: #fff;
   padding: 1rem;
   margin-bottom: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 .day h2 {
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.5rem 0;
 }
 .inputs {
   display: flex;
@@ -50,8 +41,6 @@ h1 {
 input[type="time"] {
   padding: 0.5rem;
   font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 }
 label {
   font-weight: bold;
@@ -62,21 +51,18 @@ label {
   font-weight: bold;
 }
 .totaux {
-  background: #d0ebff;
+  background: #e0f7fa;
   padding: 1rem;
   border-radius: 8px;
   text-align: center;
 }
 button {
   margin-top: 1rem;
+  width: 100%;
   padding: 0.75rem;
   font-size: 1rem;
   background: #007bff;
   color: white;
   border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-button:hover {
-  background: #0056b3;
+  border-radius: 5px;
 }

@@ -3,16 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Planning Friendly - 35h</title>
+  <title>Planning Hebdo - 35h</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Planning Hebdo" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <meta name="theme-color" content="#007bff" />
 </head>
 <body>
   <main>
-    <h1>📅 Mon Planning Hebdo</h1>
+    <h1>Planning Hebdomadaire</h1>
     <div class="week-nav">
-      <button onclick="changerSemaine(-1)">⬅️</button>
+      <button onclick="changerSemaine(-1)">⬅️ Semaine précédente</button>
       <span id="periodeSemaine">Semaine du ...</span>
-      <button onclick="changerSemaine(1)">➡️</button>
+      <button onclick="changerSemaine(1)">Semaine suivante ➡️</button>
     </div>
     <div id="planning"></div>
     <section class="totaux">
