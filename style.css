@@ -1,12 +1,7 @@
-
-* {
-  box-sizing: border-box;
-}
 body {
   font-family: Arial, sans-serif;
-  margin: 0;
   padding: 1rem;
-  background: #f7f7f7;
+  background: #f9f9f9;
 }
 main {
   max-width: 600px;
@@ -15,38 +10,39 @@ main {
 h1 {
   text-align: center;
   font-size: 1.5rem;
-}
-.day-block {
-  background: #fff;
-  padding: 0.75rem;
   margin-bottom: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
 }
-.day-block h2 {
-  margin-top: 0;
-  font-size: 1.1rem;
+.day {
+  background: #fff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
-.input-pair {
+.day h2 {
+  margin: 0 0 0.5rem 0;
+}
+.inputs {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
+  flex-direction: column;
+  gap: 0.5rem;
 }
-.input-pair input {
-  width: 48%;
+input[type="time"] {
   padding: 0.5rem;
   font-size: 1rem;
 }
-.total-display {
-  text-align: right;
+label {
   font-weight: bold;
-  font-size: 0.95rem;
 }
-.summary {
+.total {
+  text-align: right;
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+.totaux {
   background: #e0f7fa;
   padding: 1rem;
-  margin-top: 1rem;
-  border-radius: 5px;
+  border-radius: 8px;
   text-align: center;
 }
 button {
@@ -54,7 +50,7 @@ button {
   width: 100%;
   padding: 0.75rem;
   font-size: 1rem;
-  background: #1976d2;
+  background: #007bff;
   color: white;
   border: none;
   border-radius: 5px;
