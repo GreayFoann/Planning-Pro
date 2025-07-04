@@ -1,93 +1,50 @@
 body {
-  font-family: Arial, sans-serif;
-  padding: 1rem;
-  background: #f9f9f9;
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
 }
-main {
-  max-width: 600px;
-  margin: auto;
-}
-h1 {
+
+header, footer {
+  background: #f5f5f5;
+  padding: 1em;
   text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
 }
-.select-date {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1rem;
+
+.navigation button {
+  margin: 0.5em;
 }
-.select-date select {
-  padding: 0.4rem;
-  font-size: 1rem;
+
+.mois-select {
+  margin-top: 1em;
 }
-.week-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
+
+main {
+  padding: 1em;
 }
-.week-nav span {
-  font-weight: bold;
-  margin: 0.5rem;
-}
+
 .day {
-  background: #fff;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  margin-bottom: 1em;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
-.day.ferie {
+
+.jour-ferie {
   background-color: #eee;
   color: #999;
 }
-.day h2 {
-  margin: 0 0 0.5rem 0;
-}
-.inputs {
+
+footer {
+  margin-top: 2em;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  align-items: center;
 }
-input[type="time"],
-input[type="checkbox"] {
-  padding: 0.5rem;
-  font-size: 1rem;
-}
-label {
-  font-weight: bold;
-}
-.total {
-  text-align: right;
-  margin-top: 0.5rem;
-  font-weight: bold;
-}
-.totaux {
-  background: #e0f7fa;
-  padding: 1rem;
-  border-radius: 8px;
-  text-align: center;
-}
-button {
-  margin-top: 1rem;
-  width: 100%;
-  padding: 0.75rem;
-  font-size: 1rem;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-}
+
 .signature {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  font-style: italic;
-  color: #999;
-  font-size: 0.9rem;
+  margin-top: 1em;
+  font-size: 0.9em;
+  text-align: right;
+  width: 100%;
+  padding-right: 1em;
 }
