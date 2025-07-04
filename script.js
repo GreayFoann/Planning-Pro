@@ -35,7 +35,7 @@ function creerJour(nom, data = {}) {
       <input type="time" class="debutAprem" value="${data.apremDebut || ""}" />
       <input type="time" class="finAprem" value="${data.apremFin || ""}" />
     </div>
-    <div class="total">Total : <span class="totalJour">0</span> h</div>
+    <div class="total">Total : <span class="totalJour">0h00min</span></div>
   `;
 
   container.querySelectorAll("input").forEach(input => {
@@ -45,14 +45,20 @@ function creerJour(nom, data = {}) {
   return container;
 }
 
+function formatHeure(decimal) {
+  const heures = Math.floor(decimal);
+  const minutes = Math.round((decimal - heures) * 60);
+  return `${heures}h${minutes.toString().padStart(2, "0")}min`;
+}
+
 function chargerPlanning() {
   planning.innerHTML = "";
 
   const lundi = getDateDuLundi(semaineOffset);
-  const dimanche = new Date(lundi);
-  dimanche.setDate(lundi.getDate() + 4);
+  const vendredi = new Date(lundi);
+  vendredi.setDate(lundi.getDate() + 4);
 
-  periodeSemaine.textContent = `Semaine du ${formatDate(lundi)} au ${formatDate(dimanche)}`;
+  periodeSemaine.textContent = `Semaine du ${formatDate(lundi)} au ${formatDate(vendredi)}`;
 
   const storageKey = keySemaine(lundi);
   const sauvegarde = JSON.parse(localStorage.getItem(storageKey)) || {};
@@ -88,7 +94,7 @@ function calculerTotaux() {
     const aprem = diffHeures(apremDebut, apremFin);
     const totalJour = matin + aprem;
 
-    jour.querySelector(".totalJour").textContent = totalJour.toFixed(2);
+    jour.querySelector(".totalJour").textContent = formatHeure(totalJour);
     totalSemaine += totalJour;
 
     sauvegarde[jours[i]] = {
@@ -97,8 +103,8 @@ function calculerTotaux() {
   });
 
   localStorage.setItem(storageKey, JSON.stringify(sauvegarde));
-  document.getElementById("totalEffectue").textContent = totalSemaine.toFixed(2);
-  document.getElementById("reste").textContent = (35 - totalSemaine).toFixed(2);
+  document.getElementById("totalEffectue").textContent = formatHeure(totalSemaine);
+  document.getElementById("reste").textContent = formatHeure(35 - totalSemaine);
 }
 
 function changerSemaine(offset) {
@@ -111,11 +117,12 @@ function exportCSV() {
   const storageKey = keySemaine(lundi);
   const data = JSON.parse(localStorage.getItem(storageKey)) || {};
 
-  let csv = "Jour;Début matin;Fin matin;Début après-midi;Fin après-midi;Total\\n";
+  let csv = "Jour;Début matin;Fin matin;Début après-midi;Fin après-midi;Total\n";
   jours.forEach(jour => {
     const e = data[jour] || {};
-    const total = (diffHeures(e.matinDebut, e.matinFin) + diffHeures(e.apremDebut, e.apremFin)).toFixed(2);
-    csv += `${jour};${e.matinDebut || ""};${e.matinFin || ""};${e.apremDebut || ""};${e.apremFin || ""};${total}\\n`;
+    const totalDecimal = (diffHeures(e.matinDebut, e.matinFin) + diffHeures(e.apremDebut, e.apremFin));
+    const total = formatHeure(totalDecimal);
+    csv += `${jour};${e.matinDebut || ""};${e.matinFin || ""};${e.apremDebut || ""};${e.apremFin || ""};${total}\n`;
   });
 
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
