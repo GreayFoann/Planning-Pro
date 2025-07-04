@@ -6,27 +6,78 @@ const periodeSemaine = document.getElementById("periodeSemaine");
 
 function getDateDuLundi(offset = 0) {
   const date = new Date();
+  date.setDate(date.getDate() + offset * 7);
   const day = date.getDay();
-  const diff = date.getDate() - day + (day === 0 ? -6 : 1) + offset * 7;
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
   return new Date(date.setDate(diff));
 }
 
-function formatDate(date) {
+function getDateForJour(lundi, index) {
+  const date = new Date(lundi);
+  date.setDate(lundi.getDate() + index);
+  return date;
+}
+
+function formatDateComplete(date) {
   return date.toLocaleDateString("fr-FR", {
-    day: "numeric", month: "long", year: "numeric"
+    weekday: "long", day: "numeric", month: "long", year: "numeric"
   });
+}
+
+function estJourFerie(date) {
+  const annee = date.getFullYear();
+  const jour = date.getDate();
+  const mois = date.getMonth() + 1;
+
+  // Jours fériés fixes
+  const feries = [
+    `1-1`, `1-5`, `8-5`, `14-7`, `15-8`,
+    `1-11`, `11-11`, `25-12`
+  ];
+
+  // Pâques mobile
+  const paques = calculerPaques(annee);
+  const joursMobiles = [
+    new Date(paques), // Pâques
+    new Date(paques.getTime() + 1 * 86400000), // Lundi de Pâques
+    new Date(paques.getTime() + 39 * 86400000), // Ascension
+    new Date(paques.getTime() + 50 * 86400000) // Pentecôte
+  ];
+
+  const cle = `${jour}-${mois}`;
+  if (feries.includes(cle)) return true;
+
+  return joursMobiles.some(d =>
+    d.getDate() === jour && d.getMonth() === mois - 1
+  );
+}
+
+function calculerPaques(annee) {
+  const f = Math.floor,
+        G = annee % 19,
+        C = f(annee / 100),
+        H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30,
+        I = H - f(H / 28) * (1 - f(29 / (H + 1)) * f((21 - G) / 11)),
+        J = (annee + f(annee / 4) + I + 2 - C + f(C / 4)) % 7,
+        L = I - J,
+        mois = 3 + f((L + 40) / 44),
+        jour = L + 28 - 31 * f(mois / 4);
+  return new Date(annee, mois - 1, jour);
 }
 
 function keySemaine(lundi) {
   return "planning_" + lundi.toISOString().split("T")[0];
 }
 
-function creerJour(nom, data = {}) {
+function creerJour(date, data = {}) {
+  const nomComplet = formatDateComplete(date);
+  const ferie = estJourFerie(date);
   const container = document.createElement("div");
   container.className = "day";
+  if (ferie) container.classList.add("ferie");
 
   container.innerHTML = `
-    <h2>${nom}</h2>
+    <h2>${nomComplet}</h2>
     <div class="inputs">
       <label>Matin :</label>
       <input type="time" class="debutMatin" value="${data.matinDebut || ""}" />
@@ -53,20 +104,21 @@ function formatHeure(decimal) {
 
 function chargerPlanning() {
   planning.innerHTML = "";
-
   const lundi = getDateDuLundi(semaineOffset);
   const vendredi = new Date(lundi);
   vendredi.setDate(lundi.getDate() + 4);
 
-  periodeSemaine.textContent = `Semaine du ${formatDate(lundi)} au ${formatDate(vendredi)}`;
+  periodeSemaine.textContent = `Semaine du ${formatDateComplete(lundi)} au ${formatDateComplete(vendredi)}`;
 
   const storageKey = keySemaine(lundi);
   const sauvegarde = JSON.parse(localStorage.getItem(storageKey)) || {};
 
-  jours.forEach(jour => {
-    const bloc = creerJour(jour, sauvegarde[jour]);
+  for (let i = 0; i < 5; i++) {
+    const date = getDateForJour(lundi, i);
+    const nom = jours[i];
+    const bloc = creerJour(date, sauvegarde[nom]);
     planning.appendChild(bloc);
-  });
+  }
 
   calculerTotaux();
   remplirSelecteursDate();
@@ -169,9 +221,11 @@ function allerAuMois() {
   const mois = parseInt(document.getElementById("mois").value);
   const annee = parseInt(document.getElementById("annee").value);
   const dateCible = new Date(annee, mois, 1);
-  const lundiReference = getDateDuLundi(0);
-  const diffSemaines = Math.floor((dateCible - lundiReference) / (7 * 24 * 60 * 60 * 1000));
-  semaineOffset = diffSemaines;
+
+  const lundiRef = getDateDuLundi(0);
+  const ecartJours = Math.floor((dateCible - lundiRef) / (1000 * 60 * 60 * 24));
+  semaineOffset = Math.floor(ecartJours / 7);
+
   chargerPlanning();
 }
 
