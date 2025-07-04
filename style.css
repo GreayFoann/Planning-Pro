@@ -1,50 +1,92 @@
 body {
   font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 10px;
-  background: #f4f4f4;
+  padding: 1rem;
+  background: #f9f9f9;
 }
-
-.header {
+main {
+  max-width: 600px;
+  margin: auto;
+}
+h1 {
   text-align: center;
-  margin-bottom: 20px;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
 }
-
-.controls, .selection {
-  margin-top: 10px;
-}
-
-button {
-  padding: 5px 10px;
-  margin: 5px;
-}
-
-#planning {
+.select-date {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
 }
-
+.select-date select {
+  padding: 0.4rem;
+  font-size: 1rem;
+}
+.week-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.week-nav span {
+  font-weight: bold;
+  margin: 0.5rem;
+}
 .day {
   background: #fff;
-  padding: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+.day.ferie {
+  background-color: #eee;
+  color: #999;
+}
+.day h2 {
+  margin: 0 0 0.5rem 0;
+}
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+input[type="time"] {
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+label {
+  font-weight: bold;
+}
+.total {
+  text-align: right;
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+.totaux {
+  background: #e0f7fa;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+button {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  background: #007bff;
+  color: white;
+  border: none;
   border-radius: 5px;
 }
-
-.day.ferie {
-  background-color: #ddd;
-  color: #666;
-}
-
-.totaux {
-  margin-top: 20px;
-  text-align: center;
-  font-size: 1.2em;
-}
-
 .signature {
-  text-align: right;
-  margin-top: 40px;
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
   font-style: italic;
-  color: #666;
+  color: #999;
+  font-size: 0.9rem;
 }
