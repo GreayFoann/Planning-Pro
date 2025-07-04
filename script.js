@@ -36,17 +36,11 @@ function formatHeure(decimal) {
 function estJourFerie(date) {
   const annee = date.getFullYear();
   const joursFeries = [
-    `01-01`, // Jour de l'an
-    `01-05`, // Fête du travail
-    `08-05`, // Victoire 1945
-    `14-07`, // Fête nationale
-    `15-08`, // Assomption
-    `01-11`, // Toussaint
-    `11-11`, // Armistice
-    `25-12`, // Noël
-    datePaques(annee, 1), // Lundi de Pâques
-    datePaques(annee, 39), // Ascension
-    datePaques(annee, 50), // Lundi de Pentecôte
+    `01-01`, `01-05`, `08-05`, `14-07`, `15-08`,
+    `01-11`, `11-11`, `25-12`,
+    datePaques(annee, 1),   // Lundi de Pâques
+    datePaques(annee, 39),  // Ascension
+    datePaques(annee, 50),  // Lundi de Pentecôte
   ];
   const d = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}`;
   return joursFeries.includes(d);
@@ -67,7 +61,8 @@ function datePaques(year, offset = 0) {
   return `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 }
 
-let semaineOffset = 0;
+// Charger la dernière semaine affichée, ou 0 par défaut
+let semaineOffset = parseInt(localStorage.getItem("semaineOffset")) || 0;
 
 function afficherSemaine() {
   const lundi = getDateDuLundi(semaineOffset);
@@ -127,13 +122,9 @@ function calculerTotaux() {
     totalSemaine += totalJour;
 
     const date = getDateForJour(lundi, i);
-    if (estJourFerie(date)) {
-      nbFeries++;
-    }
+    if (estJourFerie(date)) nbFeries++;
 
-    sauvegarde[jours[i]] = {
-      matinDebut, matinFin, apremDebut, apremFin
-    };
+    sauvegarde[jours[i]] = { matinDebut, matinFin, apremDebut, apremFin };
   });
 
   localStorage.setItem(storageKey, JSON.stringify(sauvegarde));
@@ -143,13 +134,16 @@ function calculerTotaux() {
   document.getElementById("reste").textContent = formatHeure(Math.max(0, quota - totalSemaine));
 }
 
+// Navigation et sauvegarde offset
 document.getElementById("prev").addEventListener("click", () => {
   semaineOffset--;
+  localStorage.setItem("semaineOffset", semaineOffset);
   afficherSemaine();
 });
 
 document.getElementById("next").addEventListener("click", () => {
   semaineOffset++;
+  localStorage.setItem("semaineOffset", semaineOffset);
   afficherSemaine();
 });
 
@@ -157,9 +151,10 @@ document.getElementById("allerBtn").addEventListener("click", () => {
   const mois = parseInt(document.getElementById("moisSelect").value);
   const annee = parseInt(document.getElementById("anneeSelect").value);
   const cible = new Date(annee, mois, 1);
-  const lundi = getDateDuLundi();
+  const lundi = getDateDuLundi(0);
   const diff = Math.floor((cible - lundi) / (1000 * 60 * 60 * 24 * 7));
-  semaineOffset += diff;
+  semaineOffset = diff;
+  localStorage.setItem("semaineOffset", semaineOffset);
   afficherSemaine();
 });
 
