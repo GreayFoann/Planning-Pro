@@ -1,45 +1,68 @@
-
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    background: #f9f9f9;
+  font-family: Arial, sans-serif;
+  padding: 1rem;
+  background: #f9f9f9;
 }
-#controls {
-    margin-bottom: 10px;
+main {
+  max-width: 600px;
+  margin: auto;
 }
-#monthLabel {
-    font-weight: bold;
-    font-size: 18px;
-    margin: 0 15px;
+h1 {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
 }
-#calendar {
-    display: flex;
-    flex-direction: column;
+.week-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.week-nav span {
+  font-weight: bold;
+  margin: 0.5rem;
 }
 .day {
-    background: white;
-    border: 1px solid #ccc;
-    padding: 8px;
-    margin-bottom: 5px;
+  background: #fff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
-.day.weekend {
-    background: #e0e0e0;
-}
-.day.holiday {
-    background: #ffe0e0;
+.day h2 {
+  margin: 0 0 0.5rem 0;
 }
 .inputs {
-    margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 input[type="time"] {
-    width: 100px;
+  padding: 0.5rem;
+  font-size: 1rem;
 }
-.week-summary {
-    font-weight: bold;
-    margin: 5px 0;
-    color: #333;
+label {
+  font-weight: bold;
 }
-#exportBtn {
-    margin-top: 15px;
-    padding: 8px 12px;
+.total {
+  text-align: right;
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+.totaux {
+  background: #e0f7fa;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+button {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
 }
