@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Planning Hebdo - 35h</title>
+  <title>Planning Friendly - 35h</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main>
-    <h1>Planning Hebdomadaire</h1>
+    <h1>📅 Mon Planning Hebdo</h1>
     <div class="week-nav">
-      <button onclick="changerSemaine(-1)">⬅️ Semaine précédente</button>
+      <button onclick="changerSemaine(-1)">⬅️</button>
       <span id="periodeSemaine">Semaine du ...</span>
-      <button onclick="changerSemaine(1)">Semaine suivante ➡️</button>
+      <button onclick="changerSemaine(1)">➡️</button>
     </div>
     <div id="planning"></div>
     <section class="totaux">
-      <p><strong>Total effectué :</strong> <span id="totalEffectue">0</span> h</p>
-      <p><strong>Heures restantes :</strong> <span id="reste">35</span> h</p>
+      <p><strong>Total effectué :</strong> <span id="totalEffectue">0h00min</span></p>
+      <p><strong>Heures restantes :</strong> <span id="reste">35h00min</span></p>
       <button onclick="exportCSV()">📤 Exporter en CSV</button>
     </section>
   </main>

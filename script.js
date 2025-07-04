@@ -24,7 +24,6 @@ function keySemaine(lundi) {
 function creerJour(nom, data = {}) {
   const container = document.createElement("div");
   container.className = "day";
-
   container.innerHTML = `
     <h2>${nom}</h2>
     <div class="inputs">
@@ -37,11 +36,9 @@ function creerJour(nom, data = {}) {
     </div>
     <div class="total">Total : <span class="totalJour">0h00min</span></div>
   `;
-
   container.querySelectorAll("input").forEach(input => {
     input.addEventListener("change", calculerTotaux);
   });
-
   return container;
 }
 
@@ -53,21 +50,16 @@ function formatHeure(decimal) {
 
 function chargerPlanning() {
   planning.innerHTML = "";
-
   const lundi = getDateDuLundi(semaineOffset);
   const vendredi = new Date(lundi);
   vendredi.setDate(lundi.getDate() + 4);
-
   periodeSemaine.textContent = `Semaine du ${formatDate(lundi)} au ${formatDate(vendredi)}`;
-
   const storageKey = keySemaine(lundi);
   const sauvegarde = JSON.parse(localStorage.getItem(storageKey)) || {};
-
   jours.forEach(jour => {
     const bloc = creerJour(jour, sauvegarde[jour]);
     planning.appendChild(bloc);
   });
-
   calculerTotaux();
 }
 
@@ -83,25 +75,18 @@ function calculerTotaux() {
   const lundi = getDateDuLundi(semaineOffset);
   const storageKey = keySemaine(lundi);
   const sauvegarde = {};
-
   document.querySelectorAll(".day").forEach((jour, i) => {
     const matinDebut = jour.querySelector(".debutMatin").value;
     const matinFin = jour.querySelector(".finMatin").value;
     const apremDebut = jour.querySelector(".debutAprem").value;
     const apremFin = jour.querySelector(".finAprem").value;
-
     const matin = diffHeures(matinDebut, matinFin);
     const aprem = diffHeures(apremDebut, apremFin);
     const totalJour = matin + aprem;
-
     jour.querySelector(".totalJour").textContent = formatHeure(totalJour);
     totalSemaine += totalJour;
-
-    sauvegarde[jours[i]] = {
-      matinDebut, matinFin, apremDebut, apremFin
-    };
+    sauvegarde[jours[i]] = { matinDebut, matinFin, apremDebut, apremFin };
   });
-
   localStorage.setItem(storageKey, JSON.stringify(sauvegarde));
   document.getElementById("totalEffectue").textContent = formatHeure(totalSemaine);
   document.getElementById("reste").textContent = formatHeure(35 - totalSemaine);
@@ -116,15 +101,15 @@ function exportCSV() {
   const lundi = getDateDuLundi(semaineOffset);
   const storageKey = keySemaine(lundi);
   const data = JSON.parse(localStorage.getItem(storageKey)) || {};
-
-  let csv = "Jour;Début matin;Fin matin;Début après-midi;Fin après-midi;Total\n";
+  let csv = "Jour;Début matin;Fin matin;Début après-midi;Fin après-midi;Total
+";
   jours.forEach(jour => {
     const e = data[jour] || {};
-    const totalDecimal = (diffHeures(e.matinDebut, e.matinFin) + diffHeures(e.apremDebut, e.apremFin));
+    const totalDecimal = diffHeures(e.matinDebut, e.matinFin) + diffHeures(e.apremDebut, e.apremFin);
     const total = formatHeure(totalDecimal);
-    csv += `${jour};${e.matinDebut || ""};${e.matinFin || ""};${e.apremDebut || ""};${e.apremFin || ""};${total}\n`;
+    csv += `${jour};${e.matinDebut || ""};${e.matinFin || ""};${e.apremDebut || ""};${e.apremFin || ""};${total}
+`;
   });
-
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
