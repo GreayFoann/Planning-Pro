@@ -79,9 +79,10 @@ button {
   border-radius: 5px;
 }
 .signature {
-  text-align: right;
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
   font-style: italic;
   color: #999;
-  margin-top: 2rem;
   font-size: 0.9rem;
 }
