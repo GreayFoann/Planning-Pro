@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Planning Hebdo - 35h</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main>
     <h1>Planning Hebdomadaire</h1>
-    <div id="week-container"></div>
-    <div class="summary">
-      <p><strong>Total effectué :</strong> <span id="totalHours">0</span> h</p>
-      <p><strong>Heures restantes :</strong> <span id="remainingHours">35</span> h</p>
-    </div>
-    <button onclick="exportCSV()">📤 Exporter CSV</button>
+    <div id="planning"></div>
+    <section class="totaux">
+      <p><strong>Total effectué :</strong> <span id="totalEffectue">0</span> h</p>
+      <p><strong>Heures restantes :</strong> <span id="reste">35</span> h</p>
+      <button onclick="exportCSV()">📤 Exporter en CSV</button>
+    </section>
   </main>
   <script src="script.js"></script>
 </body>
