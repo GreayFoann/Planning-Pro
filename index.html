@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Planning Hebdo - 35h</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Planning Mensuel - 35h</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main>
-    <h1>Planning Hebdomadaire</h1>
-    <div id="planning"></div>
-    <section class="totaux">
-      <p><strong>Total effectué :</strong> <span id="totalEffectue">0</span> h</p>
-      <p><strong>Heures restantes :</strong> <span id="reste">35</span> h</p>
-      <button onclick="exportCSV()">📤 Exporter en CSV</button>
-    </section>
-  </main>
-  <script src="script.js"></script>
+    <h1>Planning Mensuel - 35h</h1>
+    <div id="controls">
+        <button onclick="changeMonth(-1)">← Mois précédent</button>
+        <span id="monthLabel"></span>
+        <button onclick="changeMonth(1)">Mois suivant →</button>
+    </div>
+    <div id="calendar"></div>
+    <button id="exportBtn" onclick="exportCSV()">📤 Exporter en CSV</button>
+    <script src="script.js"></script>
 </body>
 </html>
