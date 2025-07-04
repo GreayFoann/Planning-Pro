@@ -2,40 +2,32 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Planning Hebdomadaire CIXI - 35h</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planning CIXI - 35h</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main>
-    <h1>Planning Hebdomadaire - CIXI</h1>
+  <div class="header">
+    <button onclick="changerSemaine(-1)">← Semaine précédente</button>
+    <div id="semaineLabel"></div>
+    <button onclick="changerSemaine(1)">Semaine suivante →</button>
+  </div>
 
-    <div class="select-date">
-      <label for="mois">Mois :</label>
-      <select id="mois"></select>
+  <div class="semaine-control">
+    <select id="moisSelect"></select>
+    <select id="anneeSelect"></select>
+    <button onclick="allerAuMois()">Aller</button>
+  </div>
 
-      <label for="annee">Année :</label>
-      <select id="annee"></select>
+  <div id="planning"></div>
 
-      <button onclick="allerAuMois()">Aller</button>
-    </div>
+  <div class="totaux">
+    <strong>Total effectué :</strong> <span id="totalEffectue">0h</span> /
+    <strong>Heures restantes :</strong> <span id="reste">35h</span>
+  </div>
 
-    <div class="week-nav">
-      <button onclick="changerSemaine(-1)">⬅️ Semaine précédente</button>
-      <span id="periodeSemaine">Semaine du ...</span>
-      <button onclick="changerSemaine(1)">Semaine suivante ➡️</button>
-    </div>
+  <footer>Aymerik G.</footer>
 
-    <div id="planning"></div>
-
-    <section class="totaux">
-      <p><strong>Total effectué :</strong> <span id="totalEffectue">0h00min</span></p>
-      <p><strong>Heures restantes :</strong> <span id="reste">35h00min</span></p>
-      <button onclick="exportCSV()">📤 Exporter en CSV</button>
-    </section>
-
-    <div class="signature">Aymerik G.</div>
-  </main>
   <script src="script.js"></script>
 </body>
 </html>
