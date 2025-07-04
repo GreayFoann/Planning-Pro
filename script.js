@@ -69,7 +69,7 @@ function chargerPlanning() {
   });
 
   calculerTotaux();
-  remplirSelecteursDate(); // MAJ du menu mois/année
+  remplirSelecteursDate();
 }
 
 function diffHeures(h1, h2) {
@@ -138,7 +138,8 @@ function remplirSelecteursDate() {
   const moisSelect = document.getElementById("mois");
   const anneeSelect = document.getElementById("annee");
 
-  if (moisSelect.children.length > 0) return; // évite de remplir deux fois
+  moisSelect.innerHTML = "";
+  anneeSelect.innerHTML = "";
 
   const moisNoms = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
                     "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
@@ -159,7 +160,7 @@ function remplirSelecteursDate() {
     anneeSelect.appendChild(opt);
   }
 
-  const aujourdHui = new Date();
+  const aujourdHui = getDateDuLundi(semaineOffset);
   moisSelect.value = aujourdHui.getMonth();
   anneeSelect.value = aujourdHui.getFullYear();
 }
