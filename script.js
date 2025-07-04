@@ -69,6 +69,7 @@ function chargerPlanning() {
   });
 
   calculerTotaux();
+  remplirSelecteursDate(); // MAJ du menu mois/année
 }
 
 function diffHeures(h1, h2) {
@@ -131,6 +132,46 @@ function exportCSV() {
   a.href = url;
   a.download = `planning_${lundi.toISOString().split("T")[0]}.csv`;
   a.click();
+}
+
+function remplirSelecteursDate() {
+  const moisSelect = document.getElementById("mois");
+  const anneeSelect = document.getElementById("annee");
+
+  if (moisSelect.children.length > 0) return; // évite de remplir deux fois
+
+  const moisNoms = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+                    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+
+  const anneeActuelle = new Date().getFullYear();
+
+  moisNoms.forEach((nom, index) => {
+    const opt = document.createElement("option");
+    opt.value = index;
+    opt.textContent = nom;
+    moisSelect.appendChild(opt);
+  });
+
+  for (let a = anneeActuelle - 3; a <= anneeActuelle + 3; a++) {
+    const opt = document.createElement("option");
+    opt.value = a;
+    opt.textContent = a;
+    anneeSelect.appendChild(opt);
+  }
+
+  const aujourdHui = new Date();
+  moisSelect.value = aujourdHui.getMonth();
+  anneeSelect.value = aujourdHui.getFullYear();
+}
+
+function allerAuMois() {
+  const mois = parseInt(document.getElementById("mois").value);
+  const annee = parseInt(document.getElementById("annee").value);
+  const dateCible = new Date(annee, mois, 1);
+  const lundiReference = getDateDuLundi(0);
+  const diffSemaines = Math.floor((dateCible - lundiReference) / (7 * 24 * 60 * 60 * 1000));
+  semaineOffset = diffSemaines;
+  chargerPlanning();
 }
 
 chargerPlanning();
