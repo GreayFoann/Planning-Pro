@@ -1,112 +1,111 @@
 const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+const joursFeriesFixes = [
+  "01-01", "01-05", "08-05", "14-07", "15-08", "01-11", "11-11", "25-12"
+];
+
+let semaineOffset = 0;
+initialiserMoisEtAnnee();
+afficherSemaine();
+
+function initialiserMoisEtAnnee() {
+  const moisSelect = document.getElementById("mois");
+  const anneeSelect = document.getElementById("annee");
+
+  for (let m = 0; m < 12; m++) {
+    const opt = document.createElement("option");
+    opt.value = m;
+    opt.textContent = new Date(2000, m).toLocaleString("fr-FR", { month: "long" });
+    moisSelect.appendChild(opt);
+  }
+
+  const anneeCourante = new Date().getFullYear();
+  for (let a = anneeCourante - 2; a <= anneeCourante + 2; a++) {
+    const opt = document.createElement("option");
+    opt.value = a;
+    opt.textContent = a;
+    anneeSelect.appendChild(opt);
+  }
+}
+
+function allerAuMois() {
+  const mois = parseInt(document.getElementById("mois").value);
+  const annee = parseInt(document.getElementById("annee").value);
+  const premierDuMois = new Date(annee, mois, 1);
+  const lundi = getDateDuLundi(0);
+  const diffTemps = premierDuMois.getTime() - lundi.getTime();
+  semaineOffset = Math.floor(diffTemps / (7 * 24 * 60 * 60 * 1000));
+  afficherSemaine();
+}
+
+function changerSemaine(delta) {
+  semaineOffset += delta;
+  afficherSemaine();
+}
 
 function getDateDuLundi(offset = 0) {
   const date = new Date();
-  date.setDate(date.getDate() - ((date.getDay() + 6) % 7) + offset * 7);
-  return date;
+  const jour = date.getDay();
+  const lundi = new Date(date.setDate(date.getDate() - (jour === 0 ? 6 : jour - 1) + offset * 7));
+  lundi.setHours(0, 0, 0, 0);
+  return lundi;
 }
-
-function getDateForJour(lundi, index) {
-  const date = new Date(lundi);
-  date.setDate(lundi.getDate() + index);
-  return date;
-}
-
-function formatDate(date) {
-  return date.toISOString().split("T")[0];
-}
-
-function keySemaine(date) {
-  return "semaine_" + formatDate(date);
-}
-
-function diffHeures(debut, fin) {
-  if (!debut || !fin) return 0;
-  const [h1, m1] = debut.split(":").map(Number);
-  const [h2, m2] = fin.split(":").map(Number);
-  return Math.max(0, (h2 * 60 + m2) - (h1 * 60 + m1)) / 60;
-}
-
-function formatHeure(decimal) {
-  const heures = Math.floor(decimal);
-  const minutes = Math.round((decimal - heures) * 60);
-  return `${heures}h${minutes.toString().padStart(2, '0')}min`;
-}
-
-function estJourFerie(date) {
-  const annee = date.getFullYear();
-  const joursFeries = [
-    `01-01`, `01-05`, `08-05`, `14-07`, `15-08`,
-    `01-11`, `11-11`, `25-12`,
-    datePaques(annee, 1),   // Lundi de Pâques
-    datePaques(annee, 39),  // Ascension
-    datePaques(annee, 50),  // Lundi de Pentecôte
-  ];
-  const d = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-  return joursFeries.includes(d);
-}
-
-function datePaques(year, offset = 0) {
-  const f = Math.floor;
-  const G = year % 19;
-  const C = f(year / 100);
-  const H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30;
-  const I = H - f(H / 28) * (1 - f(H / 28) * f(29 / (H + 1)) * f((21 - G) / 11));
-  const J = (year + f(year / 4) + I + 2 - C + f(C / 4)) % 7;
-  const L = I - J;
-  const mois = 3 + f((L + 40) / 44);
-  const jour = L + 28 - 31 * f(mois / 4);
-  const date = new Date(year, mois - 1, jour);
-  date.setDate(date.getDate() + offset);
-  return `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-}
-
-// Charger la dernière semaine affichée, ou 0 par défaut
-let semaineOffset = parseInt(localStorage.getItem("semaineOffset")) || 0;
 
 function afficherSemaine() {
+  const planning = document.getElementById("planning");
+  planning.innerHTML = "";
   const lundi = getDateDuLundi(semaineOffset);
-  const container = document.getElementById("semaine");
-  container.innerHTML = "";
-
-  const titre = document.getElementById("titreSemaine");
-  titre.textContent = `Semaine du ${lundi.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}`;
+  const fin = new Date(lundi);
+  fin.setDate(fin.getDate() + 6);
+  document.getElementById("semaineLabel").textContent =
+    `Semaine du ${lundi.toLocaleDateString("fr-FR")} au ${fin.toLocaleDateString("fr-FR")}`;
 
   const sauvegarde = JSON.parse(localStorage.getItem(keySemaine(lundi))) || {};
 
-  jours.forEach((jour, i) => {
-    const date = getDateForJour(lundi, i);
-    const dateStr = date.toLocaleDateString("fr-FR");
-    const isFerie = estJourFerie(date);
+  for (let i = 0; i < 7; i++) {
+    const jourDate = new Date(lundi);
+    jourDate.setDate(lundi.getDate() + i);
+    const dateStr = jourDate.toISOString().split("T")[0];
+    const jourStr = `${jours[i]} ${jourDate.toLocaleDateString("fr-FR")}`;
 
-    const row = document.createElement("div");
-    row.className = "day" + (isFerie ? " ferie" : "");
-
-    row.innerHTML = `
-      <div class="jour">${jour} ${dateStr}</div>
-      <input type="time" class="debutMatin" value="${sauvegarde[jour]?.matinDebut || ""}">
-      <input type="time" class="finMatin" value="${sauvegarde[jour]?.matinFin || ""}">
-      <input type="time" class="debutAprem" value="${sauvegarde[jour]?.apremDebut || ""}">
-      <input type="time" class="finAprem" value="${sauvegarde[jour]?.apremFin || ""}">
-      <div class="totalJour">0h00min</div>
+    const isFerie = joursFeriesFixes.includes(jourDate.toISOString().slice(5, 10));
+    const div = document.createElement("div");
+    div.className = "day" + (isFerie ? " ferie" : "");
+    div.innerHTML = `
+      <strong>${jourStr}</strong><br/>
+      Matin : <input type="time" class="debutMatin"> - <input type="time" class="finMatin"><br/>
+      Après-midi : <input type="time" class="debutAprem"> - <input type="time" class="finAprem"><br/>
+      Total jour : <span class="totalJour">0h00</span>
     `;
-    container.appendChild(row);
-  });
 
-  document.querySelectorAll("input").forEach(input => {
-    input.addEventListener("change", calculerTotaux);
-  });
+    const data = sauvegarde[jours[i]];
+    if (data) {
+      div.querySelector(".debutMatin").value = data.matinDebut;
+      div.querySelector(".finMatin").value = data.matinFin;
+      div.querySelector(".debutAprem").value = data.apremDebut;
+      div.querySelector(".finAprem").value = data.apremFin;
+    }
+
+    ["debutMatin", "finMatin", "debutAprem", "finAprem"].forEach(cls => {
+      div.querySelector(`.${cls}`).addEventListener("change", calculerTotaux);
+    });
+
+    planning.appendChild(div);
+  }
 
   calculerTotaux();
 }
 
+function keySemaine(lundi) {
+  return "semaine_" + lundi.toISOString().split("T")[0];
+}
+
 function calculerTotaux() {
   let totalSemaine = 0;
-  let nbFeries = 0;
-
   const lundi = getDateDuLundi(semaineOffset);
   const storageKey = keySemaine(lundi);
   const sauvegarde = {};
+
+  let nbJoursFeries = 0;
 
   document.querySelectorAll(".day").forEach((jour, i) => {
     const matinDebut = jour.querySelector(".debutMatin").value;
@@ -121,41 +120,35 @@ function calculerTotaux() {
     jour.querySelector(".totalJour").textContent = formatHeure(totalJour);
     totalSemaine += totalJour;
 
-    const date = getDateForJour(lundi, i);
-    if (estJourFerie(date)) nbFeries++;
+    sauvegarde[jours[i]] = {
+      matinDebut, matinFin, apremDebut, apremFin
+    };
 
-    sauvegarde[jours[i]] = { matinDebut, matinFin, apremDebut, apremFin };
+    if (jour.classList.contains("ferie")) {
+      nbJoursFeries++;
+    }
   });
 
   localStorage.setItem(storageKey, JSON.stringify(sauvegarde));
-
-  const quota = 35 - (nbFeries * 7);
   document.getElementById("totalEffectue").textContent = formatHeure(totalSemaine);
-  document.getElementById("reste").textContent = formatHeure(Math.max(0, quota - totalSemaine));
+
+  const heuresFeries = nbJoursFeries * 7;
+  const heuresRestantes = 35 - totalSemaine - heuresFeries;
+
+  document.getElementById("reste").textContent = formatHeure(Math.max(heuresRestantes, 0));
 }
 
-// Navigation et sauvegarde offset
-document.getElementById("prev").addEventListener("click", () => {
-  semaineOffset--;
-  localStorage.setItem("semaineOffset", semaineOffset);
-  afficherSemaine();
-});
+function diffHeures(debut, fin) {
+  if (!debut || !fin) return 0;
+  const [h1, m1] = debut.split(":").map(Number);
+  const [h2, m2] = fin.split(":").map(Number);
+  const t1 = h1 * 60 + m1;
+  const t2 = h2 * 60 + m2;
+  return Math.max((t2 - t1) / 60, 0);
+}
 
-document.getElementById("next").addEventListener("click", () => {
-  semaineOffset++;
-  localStorage.setItem("semaineOffset", semaineOffset);
-  afficherSemaine();
-});
-
-document.getElementById("allerBtn").addEventListener("click", () => {
-  const mois = parseInt(document.getElementById("moisSelect").value);
-  const annee = parseInt(document.getElementById("anneeSelect").value);
-  const cible = new Date(annee, mois, 1);
-  const lundi = getDateDuLundi(0);
-  const diff = Math.floor((cible - lundi) / (1000 * 60 * 60 * 24 * 7));
-  semaineOffset = diff;
-  localStorage.setItem("semaineOffset", semaineOffset);
-  afficherSemaine();
-});
-
-window.onload = afficherSemaine;
+function formatHeure(decimal) {
+  const h = Math.floor(decimal);
+  const m = Math.round((decimal - h) * 60);
+  return `${h}h${m.toString().padStart(2, "0")}`;
+}
