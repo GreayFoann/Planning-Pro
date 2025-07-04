@@ -8,10 +8,12 @@ function createDayBlock(day) {
 
   block.innerHTML = \`
     <h2>\${day}</h2>
+    <label>Matin :</label>
     <div class="input-pair">
       <input type="time" class="start1" placeholder="Début matin">
       <input type="time" class="end1" placeholder="Fin matin">
     </div>
+    <label>Après-midi :</label>
     <div class="input-pair">
       <input type="time" class="start2" placeholder="Début après-midi">
       <input type="time" class="end2" placeholder="Fin après-midi">
