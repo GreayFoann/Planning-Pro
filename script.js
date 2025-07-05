@@ -1,6 +1,11 @@
 const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
 let semaineOffset = 0;
 
+// Charger l’offset sauvegardé au démarrage
+if (localStorage.getItem("derniereSemaineOffset")) {
+  semaineOffset = parseInt(localStorage.getItem("derniereSemaineOffset"), 10);
+}
+
 const planning = document.getElementById("planning");
 const periodeSemaine = document.getElementById("periodeSemaine");
 
