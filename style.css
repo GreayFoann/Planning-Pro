@@ -96,10 +96,10 @@ h1 {
 }
 
 #periodeSemaine {
-  font-weight: 600;
+  font-weight: bold;
   font-size: 1.1rem;
   white-space: nowrap;
-  min-width: 140px;
+  min-width: 160px;
 }
 
 #planning {
