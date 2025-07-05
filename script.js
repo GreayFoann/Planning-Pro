@@ -173,8 +173,8 @@ function calculerTotaux() {
 
 function changerSemaine(offset) {
   semaineOffset += offset;
-  genererSemaine();
   localStorage.setItem("derniereSemaineOffset", semaineOffset);
+  chargerSemaine(semaineOffset);
 }
 
 function exportCSV() {
