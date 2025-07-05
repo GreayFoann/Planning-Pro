@@ -90,15 +90,20 @@ button {
   color: #999;
   font-size: 0.9rem;
 }
+
+.top-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem;
+}
+
 #toggleTheme {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  z-index: 1000;
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   cursor: pointer;
+  background-color: transparent;
+  color: inherit;
 }
 
 body.dark {
