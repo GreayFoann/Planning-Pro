@@ -230,3 +230,20 @@ h1 {
   color: var(--text);
   resize: vertical;
 }
+
+.resume-semaine {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.5rem 1rem;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.resume-semaine p {
+  margin: 0;
+}
