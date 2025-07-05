@@ -191,3 +191,26 @@ function exportCSV(){
 
 remplirSelect();
 charger();
+
+function copierHorairesLundi() {
+  const days = [...document.querySelectorAll(".day")];
+  const lundi = days[0];
+  const horaires = {
+    matinDebut: lundi.querySelector(".debutMatin").value,
+    matinFin: lundi.querySelector(".finMatin").value,
+    apremDebut: lundi.querySelector(".debutAprem").value,
+    apremFin: lundi.querySelector(".finAprem").value
+  };
+
+  for (let i = 1; i < days.length; i++) {
+    const d = days[i];
+    if (d.querySelector(".jourTravaille").checked && !d.querySelector(".congePaye").checked) {
+      d.querySelector(".debutMatin").value = horaires.matinDebut;
+      d.querySelector(".finMatin").value = horaires.matinFin;
+      d.querySelector(".debutAprem").value = horaires.apremDebut;
+      d.querySelector(".finAprem").value = horaires.apremFin;
+    }
+  }
+
+  calculer();
+}
