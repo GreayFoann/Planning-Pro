@@ -79,17 +79,11 @@ function creerJour(date, data = {}) {
   div.innerHTML = `
     <h2>${formatDateComplete(date)}</h2>
     <div class="inputs">
-      <div class="periode">
-        <label>Matin :</label>
-        <input type="time" class="debutMatin" value="..." />
-        <input type="time" class="finMatin" value="..." />
+      <label>Matin :</label><input type="time" class="debutMatin" value="${data.matinDebut || ""}" />
+      <input type="time" class="finMatin" value="${data.matinFin || ""}" />
+      <label>Après-midi :</label><input type="time" class="debutAprem" value="${data.apremDebut || ""}" />
+      <input type="time" class="finAprem" value="${data.apremFin || ""}" />
     </div>
-      <div class="periode">
-        <label>Après-midi :</label>
-        <input type="time" class="debutAprem" value="..." />
-        <input type="time" class="finAprem" value="..." />
-    </div>
-  </div>
     <div class="checkboxes">
       <label><input type="checkbox" class="jourTravaille" ${jourTrav?"checked":""}/> Jour travaillé</label>
       <label><input type="checkbox" class="congePaye" ${conge?"checked":""}/> Congé payé</label>
