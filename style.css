@@ -90,3 +90,49 @@ button {
   color: #999;
   font-size: 0.9rem;
 }
+#toggleTheme {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+body.dark {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+body.dark input,
+body.dark select,
+body.dark textarea {
+  background-color: #333;
+  color: #e0e0e0;
+  border: 1px solid #555;
+}
+
+body.dark .day {
+  background-color: #2c2c2c;
+  border-color: #444;
+}
+
+body.dark label {
+  color: #ccc;
+}
+
+body.dark .day.ferie {
+  background-color: #444;
+  color: #aaa;
+}
+
+body.dark .totaux {
+  background: #294247;
+}
+
+body.dark button {
+  background: #0066cc;
+  color: white;
+}
