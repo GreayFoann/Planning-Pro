@@ -94,17 +94,25 @@ button {
 .top-bar {
   display: flex;
   justify-content: flex-end;
-  align-items: center;
   padding: 0.5rem 1rem;
 }
 
 #toggleTheme {
-  background: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
   border: none;
-  font-size: 1.2rem; /* plus petit */
+  font-size: 16px;
   cursor: pointer;
-  padding: 0.3rem 0.5rem;
-  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+#toggleTheme:hover {
+  background-color: #ccc;
 }
 
 body.dark {
