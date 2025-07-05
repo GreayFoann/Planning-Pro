@@ -1,6 +1,5 @@
 const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
 let semaineOffset = 0;
-
 if (localStorage.getItem("derniereSemaineOffset")) {
   semaineOffset = parseInt(localStorage.getItem("derniereSemaineOffset"), 10);
 }
