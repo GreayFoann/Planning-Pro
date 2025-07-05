@@ -124,10 +124,9 @@ h1 {
 }
 
 .inputs {
-  display: grid;
-  grid-template-columns: repeat(2, auto 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
-  align-items: center;
   margin-top: 0.5rem;
 }
 
