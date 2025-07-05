@@ -1,7 +1,12 @@
 const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
-let semaineOffset = 0;
-if (localStorage.getItem("derniereSemaineOffset")) {
-  semaineOffset = parseInt(localStorage.getItem("derniereSemaineOffset"), 10);
+let semaineOffset;
+
+const derniereSemaineOffset = localStorage.getItem("derniereSemaineOffset");
+
+if (derniereSemaineOffset !== null) {
+  semaineOffset = parseInt(derniereSemaineOffset, 10);
+} else {
+  semaineOffset = 0;
 }
 
 const planning = document.getElementById("planning");
