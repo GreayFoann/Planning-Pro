@@ -1,20 +1,70 @@
 const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
+const joursFeriesFrance = [
+  "01-01", "01-05", "08-05", "14-07", "15-08", "01-11", "11-11", "25-12"
+];
+
 let semaineOffset = 0;
 
-// Charger l’offset sauvegardé au démarrage
 if (localStorage.getItem("derniereSemaineOffset")) {
   semaineOffset = parseInt(localStorage.getItem("derniereSemaineOffset"), 10);
 }
 
-const planning = document.getElementById("planning");
-const periodeSemaine = document.getElementById("periodeSemaine");
-
 function getDateDuLundi(offset = 0) {
   const date = new Date();
-  date.setDate(date.getDate() + offset * 7);
-  const day = date.getDay();
-  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-  return new Date(date.setDate(diff));
+  const jour = date.getDay();
+  const diff = date.getDate() - jour + (jour === 0 ? -6 : 1);
+  const lundi = new Date(date.setDate(diff));
+  lundi.setDate(lundi.getDate() + offset * 7);
+  return lundi;
+}
+
+function keySemaine(date) {
+  return `planning_${date.toISOString().split("T")[0]}`;
+}
+
+function formatHeure(decimal) {
+  const h = Math.floor(decimal);
+  const m = Math.round((decimal - h) * 60);
+  return `${h}h${m.toString().padStart(2, "0")}min`;
+}
+
+function diffHeures(debut, fin) {
+  if (!debut || !fin) return 0;
+  const [hd, md] = debut.split(":").map(Number);
+  const [hf, mf] = fin.split(":").map(Number);
+  const start = hd * 60 + md;
+  const end = hf * 60 + mf;
+  return Math.max(0, (end - start) / 60);
+}
+
+function estJourFerie(date) {
+  const d = new Date(date);
+  const key = d.toISOString().slice(5, 10);
+  if (joursFeriesFrance.includes(key)) return true;
+
+  const année = d.getFullYear();
+  const paques = getPaques(année);
+  const joursMobiles = [
+    new Date(paques),                         // Pâques
+    new Date(paques.setDate(paques.getDate() + 1)),   // Lundi de Pâques
+    new Date(paques.setDate(paques.getDate() + 38)),  // Ascension
+    new Date(paques.setDate(paques.getDate() + 11)),  // Pentecôte
+  ];
+
+  return joursMobiles.some(j => j.toDateString() === d.toDateString());
+}
+
+function getPaques(year) {
+  const f = Math.floor;
+  const G = year % 19;
+  const C = f(year / 100);
+  const H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30;
+  const I = H - f(H / 28) * (1 - f(29 / (H + 1)) * f((21 - G) / 11));
+  const J = (year + f(year / 4) + I + 2 - C + f(C / 4)) % 7;
+  const L = I - J;
+  const month = 3 + f((L + 40) / 44);
+  const day = L + 28 - 31 * f(month / 4);
+  return new Date(year, month - 1, day);
 }
 
 function getDateForJour(lundi, index) {
@@ -23,117 +73,43 @@ function getDateForJour(lundi, index) {
   return date;
 }
 
-function formatDateComplete(date) {
-  return date.toLocaleDateString("fr-FR", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric"
-  });
-}
-
-function estJourFerie(date) {
-  const annee = date.getFullYear();
-  const jour = date.getDate();
-  const mois = date.getMonth() + 1;
-
-  // Jours fériés fixes
-  const feries = [
-    `1-1`, `1-5`, `8-5`, `14-7`, `15-8`,
-    `1-11`, `11-11`, `25-12`
-  ];
-
-  // Pâques mobile
-  const paques = calculerPaques(annee);
-  const joursMobiles = [
-    new Date(paques), // Pâques
-    new Date(paques.getTime() + 1 * 86400000), // Lundi de Pâques
-    new Date(paques.getTime() + 39 * 86400000), // Ascension
-    new Date(paques.getTime() + 50 * 86400000) // Pentecôte
-  ];
-
-  const cle = `${jour}-${mois}`;
-  if (feries.includes(cle)) return true;
-
-  return joursMobiles.some(d =>
-    d.getDate() === jour && d.getMonth() === mois - 1
-  );
-}
-
-function calculerPaques(annee) {
-  const f = Math.floor,
-        G = annee % 19,
-        C = f(annee / 100),
-        H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30,
-        I = H - f(H / 28) * (1 - f(29 / (H + 1)) * f((21 - G) / 11)),
-        J = (annee + f(annee / 4) + I + 2 - C + f(C / 4)) % 7,
-        L = I - J,
-        mois = 3 + f((L + 40) / 44),
-        jour = L + 28 - 31 * f(mois / 4);
-  return new Date(annee, mois - 1, jour);
-}
-
-function keySemaine(lundi) {
-  return "planning_" + lundi.toISOString().split("T")[0];
-}
-
-function creerJour(date, data = {}) {
-  const nomComplet = formatDateComplete(date);
-  const ferie = estJourFerie(date);
-  const container = document.createElement("div");
-  container.className = "day";
-  if (ferie) container.classList.add("ferie");
-
-  container.innerHTML = `
-    <h2>${nomComplet}</h2>
-    <div class="inputs">
-      <label>Matin :</label>
-      <input type="time" class="debutMatin" value="${data.matinDebut || ""}" />
-      <input type="time" class="finMatin" value="${data.matinFin || ""}" />
-      <label>Après-midi :</label>
-      <input type="time" class="debutAprem" value="${data.apremDebut || ""}" />
-      <input type="time" class="finAprem" value="${data.apremFin || ""}" />
-    </div>
-    <div class="total">Total : <span class="totalJour">0h00min</span></div>
-  `;
-
-  container.querySelectorAll("input").forEach(input => {
-    input.addEventListener("change", calculerTotaux);
-  });
-
-  return container;
-}
-
-function formatHeure(decimal) {
-  const heures = Math.floor(decimal);
-  const minutes = Math.round((decimal - heures) * 60);
-  return `${heures}h${minutes.toString().padStart(2, "0")}min`;
-}
-
-function chargerPlanning() {
-  planning.innerHTML = "";
+function afficherSemaine() {
   const lundi = getDateDuLundi(semaineOffset);
-  const vendredi = new Date(lundi);
-  vendredi.setDate(lundi.getDate() + 4);
+  document.getElementById("semaine").textContent = `Semaine du ${lundi.toLocaleDateString()}`;
+  const stockage = JSON.parse(localStorage.getItem(keySemaine(lundi))) || {};
 
-  periodeSemaine.textContent = `Semaine du ${formatDateComplete(lundi)} au ${formatDateComplete(vendredi)}`;
+  const container = document.getElementById("jours");
+  container.innerHTML = "";
 
-  const storageKey = keySemaine(lundi);
-  const sauvegarde = JSON.parse(localStorage.getItem(storageKey)) || {};
-
-  for (let i = 0; i < 5; i++) {
+  jours.forEach((nom, i) => {
     const date = getDateForJour(lundi, i);
-    const nom = jours[i];
-    const bloc = creerJour(date, sauvegarde[nom]);
-    planning.appendChild(bloc);
-  }
+    const ddmmyyyy = date.toLocaleDateString("fr-FR", { weekday: 'long', day: '2-digit', month: 'long' });
+    const jourDiv = document.createElement("div");
+    jourDiv.className = "day";
+
+    if (estJourFerie(date)) jourDiv.classList.add("ferie");
+
+    jourDiv.innerHTML = `
+      <h3>${ddmmyyyy}</h3>
+      <label>Matin :
+        <input type="time" class="debutMatin" value="${stockage[nom]?.matinDebut || ""}">
+        -
+        <input type="time" class="finMatin" value="${stockage[nom]?.matinFin || ""}">
+      </label><br>
+      <label>Après-midi :
+        <input type="time" class="debutAprem" value="${stockage[nom]?.apremDebut || ""}">
+        -
+        <input type="time" class="finAprem" value="${stockage[nom]?.apremFin || ""}">
+      </label><br>
+      Total : <span class="totalJour">0h00min</span>
+    `;
+    container.appendChild(jourDiv);
+  });
 
   calculerTotaux();
-  remplirSelecteursDate();
-}
 
-function diffHeures(h1, h2) {
-  if (!h1 || !h2) return 0;
-  const [h1h, h1m] = h1.split(":").map(Number);
-  const [h2h, h2m] = h2.split(":").map(Number);
-  return ((h2h * 60 + h2m) - (h1h * 60 + h1m)) / 60;
+  // Sauvegarde la dernière semaine
+  localStorage.setItem("derniereSemaineOffset", semaineOffset);
 }
 
 function calculerTotaux() {
@@ -141,7 +117,6 @@ function calculerTotaux() {
   const lundi = getDateDuLundi(semaineOffset);
   const storageKey = keySemaine(lundi);
   const sauvegarde = {};
-
   let joursFeriesDansLaSemaine = 0;
 
   document.querySelectorAll(".day").forEach((jour, i) => {
@@ -171,11 +146,6 @@ function calculerTotaux() {
   localStorage.setItem(storageKey, JSON.stringify(sauvegarde));
   document.getElementById("totalEffectue").textContent = formatHeure(totalSemaine);
   document.getElementById("reste").textContent = formatHeure(heuresRestantes);
-}
-
-function changerSemaine(offset) {
-  semaineOffset += offset;
-  chargerPlanning();
 }
 
 function exportCSV() {
@@ -213,47 +183,33 @@ function exportCSV() {
   a.click();
 }
 
-function remplirSelecteursDate() {
-  const moisSelect = document.getElementById("mois");
-  const anneeSelect = document.getElementById("annee");
+document.getElementById("prev").onclick = () => {
+  semaineOffset--;
+  afficherSemaine();
+};
 
-  moisSelect.innerHTML = "";
-  anneeSelect.innerHTML = "";
+document.getElementById("next").onclick = () => {
+  semaineOffset++;
+  afficherSemaine();
+};
 
-  const moisNoms = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-                    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-
-  const anneeActuelle = new Date().getFullYear();
-
-  moisNoms.forEach((nom, index) => {
-    const opt = document.createElement("option");
-    opt.value = index;
-    opt.textContent = nom;
-    moisSelect.appendChild(opt);
-  });
-
-  for (let a = anneeActuelle - 3; a <= anneeActuelle + 3; a++) {
-    const opt = document.createElement("option");
-    opt.value = a;
-    opt.textContent = a;
-    anneeSelect.appendChild(opt);
-  }
-
-  const aujourdHui = getDateDuLundi(semaineOffset);
-  moisSelect.value = aujourdHui.getMonth();
-  anneeSelect.value = aujourdHui.getFullYear();
-}
-
-function allerAuMois() {
+document.getElementById("moisAnneeForm").onsubmit = e => {
+  e.preventDefault();
   const mois = parseInt(document.getElementById("mois").value);
   const annee = parseInt(document.getElementById("annee").value);
-  const dateCible = new Date(annee, mois, 1);
+  const target = new Date(annee, mois - 1, 1);
+  const lundiBase = getDateDuLundi(0);
+  const diffJours = Math.floor((target - lundiBase) / (1000 * 60 * 60 * 24));
+  semaineOffset = Math.floor(diffJours / 7);
+  afficherSemaine();
+};
 
-  const lundiRef = getDateDuLundi(0);
-  const ecartJours = Math.floor((dateCible - lundiRef) / (1000 * 60 * 60 * 24));
-  semaineOffset = Math.floor(ecartJours / 7);
+document.getElementById("export").onclick = exportCSV;
 
-  chargerPlanning();
-}
+document.addEventListener("input", e => {
+  if (e.target.matches("input[type='time']")) {
+    calculerTotaux();
+  }
+});
 
-chargerPlanning();
+window.onload = afficherSemaine;
