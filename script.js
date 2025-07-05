@@ -88,6 +88,7 @@ function creerJour(date, data = {}) {
       <label><input type="checkbox" class="jourTravaille" ${jourTrav?"checked":""}/> Jour travaillé</label>
       <label><input type="checkbox" class="congePaye" ${conge?"checked":""}/> Congé payé</label>
     </div>
+    <div class="note"><label>Note :</label><textarea class="noteJour" rows="2">${data.note || ""}</textarea></div>
     <div class="total">Total : <span class="totalJour">0h00min</span></div>
   `;
   const ct = div.querySelector(".jourTravaille");
