@@ -161,7 +161,7 @@ function remplirSelect(){
 
 function exportCSV(){
   const l = getDateDuLundi(semaineOffset);
-  const rows = [["Jour","Date","Début matin","Fin matin","AM début","AM fin","Total","Trav","Congé"]];
+  const rows = [["Jour","Date","Début matin","Fin matin","AM début","AM fin","Total","Trav","Congé","Note"]];
   document.querySelectorAll(".day").forEach((d,i)=>{
     const vals = ["debutMatin","finMatin","debutAprem","finAprem"]
       .map(cl=>d.querySelector("."+cl).value);
@@ -172,6 +172,7 @@ function exportCSV(){
       d.querySelector(".totalJour").textContent,
       d.querySelector(".jourTravaille").checked?"Oui":"Non",
       d.querySelector(".congePaye").checked?"Oui":"Non"
+      d.querySelector(".noteJour").value
     ]);
   });
   const csv = rows.map(r=>r.join(";")).join("\n");
