@@ -279,18 +279,19 @@ function exportCSV() {
 remplirSelecteursMoisAnnee();
 charger();
 
-const toggleButton = document.getElementById("toggleTheme");
+// Gestion du thème sombre
+const themeToggle = document.getElementById("toggleTheme");
 
-function appliquerThemeSombre(active) {
-  document.body.classList.toggle("dark", active);
-  localStorage.setItem("themeSombre", active ? "1" : "0");
+// Appliquer le thème sauvegardé au chargement
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+  themeToggle.textContent = "☀️";
+} else {
+  themeToggle.textContent = "🌙";
 }
 
-toggleButton.addEventListener("click", () => {
-  const actif = !document.body.classList.contains("dark");
-  appliquerThemeSombre(actif);
+themeToggle.addEventListener("click", () => {
+  const isDark = document.body.classList.toggle("dark");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+  themeToggle.textContent = isDark ? "☀️" : "🌙";
 });
-
-if (localStorage.getItem("themeSombre") === "1") {
-  appliquerThemeSombre(true);
-}
