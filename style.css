@@ -92,47 +92,22 @@ button {
 }
 #toggleTheme {
   position: fixed;
-  top: 10px;
-  right: 10px;
-  background: none;
+  top: 1rem;
+  right: 1rem;
+  background-color: #fff;
+  color: #333;
   border: none;
-  font-size: 24px;
+  font-size: 1.4rem;
   cursor: pointer;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
+  transition: background 0.3s ease;
 }
 
-body.dark {
-  background-color: #1e1e1e;
-  color: #e0e0e0;
-}
-
-body.dark input,
-body.dark select,
-body.dark textarea {
+body.dark #toggleTheme {
   background-color: #333;
-  color: #e0e0e0;
-  border: 1px solid #555;
-}
-
-body.dark .day {
-  background-color: #2c2c2c;
-  border-color: #444;
-}
-
-body.dark label {
-  color: #ccc;
-}
-
-body.dark .day.ferie {
-  background-color: #444;
-  color: #aaa;
-}
-
-body.dark .totaux {
-  background: #294247;
-}
-
-body.dark button {
-  background: #0066cc;
-  color: white;
+  color: #eee;
 }
