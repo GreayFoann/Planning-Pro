@@ -92,6 +92,12 @@ function creerJour(date, data = {}) {
     <div class="total">Total : <span class="totalJour">0h00min</span></div>
   `;
 
+  dayDiv.innerHTML += `
+    <div class="checkboxes">
+      <label><input type="checkbox" class="jourTravaille"> Jour travaillé</label>
+      <label><input type="checkbox" class="congePaye"> Congé payé</label>
+    </div>
+  `;
   container.querySelectorAll("input").forEach(input => {
     input.addEventListener("change", calculerTotaux);
   });
