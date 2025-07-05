@@ -131,33 +131,39 @@ function diffHeures(h1, h2) {
   return ((h2h * 60 + h2m) - (h1h * 60 + h1m)) / 60;
 }
 
-function calculerTotaux() {
-  let totalSemaine = 0;
+function exportCSV() {
   const lundi = getDateDuLundi(semaineOffset);
   const storageKey = keySemaine(lundi);
-  const sauvegarde = {};
+  const data = JSON.parse(localStorage.getItem(storageKey)) || {};
 
-  document.querySelectorAll(".day").forEach((jour, i) => {
-    const matinDebut = jour.querySelector(".debutMatin").value;
-    const matinFin = jour.querySelector(".finMatin").value;
-    const apremDebut = jour.querySelector(".debutAprem").value;
-    const apremFin = jour.querySelector(".finAprem").value;
+  let joursFeries = 0;
+  for (let i = 0; i < 5; i++) {
+    const date = getDateForJour(lundi, i);
+    if (estJourFerie(date)) joursFeries++;
+  }
 
-    const matin = diffHeures(matinDebut, matinFin);
-    const aprem = diffHeures(apremDebut, apremFin);
-    const totalJour = matin + aprem;
+  const quota = 35 - (joursFeries * 7);
+  let totalSemaine = 0;
 
-    jour.querySelector(".totalJour").textContent = formatHeure(totalJour);
-    totalSemaine += totalJour;
-
-    sauvegarde[jours[i]] = {
-      matinDebut, matinFin, apremDebut, apremFin
-    };
+  let csv = "Jour;Début matin;Fin matin;Début après-midi;Fin après-midi;Total\n";
+  jours.forEach(jour => {
+    const e = data[jour] || {};
+    const totalDecimal = (diffHeures(e.matinDebut, e.matinFin) + diffHeures(e.apremDebut, e.apremFin));
+    const total = formatHeure(totalDecimal);
+    totalSemaine += totalDecimal;
+    csv += `${jour};${e.matinDebut || ""};${e.matinFin || ""};${e.apremDebut || ""};${e.apremFin || ""};${total}\n`;
   });
 
-  localStorage.setItem(storageKey, JSON.stringify(sauvegarde));
-  document.getElementById("totalEffectue").textContent = formatHeure(totalSemaine);
-  document.getElementById("reste").textContent = formatHeure(35 - totalSemaine);
+  csv += `\nQuota ajusté (jours fériés : ${joursFeries}) :;${formatHeure(quota)}\n`;
+  csv += `Total effectué :;${formatHeure(totalSemaine)}\n`;
+  csv += `Heures restantes :;${formatHeure(Math.max(0, quota - totalSemaine))}\n`;
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `planning_${lundi.toISOString().split("T")[0]}.csv`;
+  a.click();
 }
 
 function changerSemaine(offset) {
