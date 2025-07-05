@@ -161,7 +161,11 @@ function calculerTotaux() {
     day.querySelector(".totalJour").textContent = formatHeure(heuresJour);
   });
 
-  const quota = 35 - 7 * (joursDivs.length - nbFeriesTravailles - nbCongesPayes);
+  const nbJoursFeries = Array.from(joursDivs).filter(d => d.classList.contains("ferie")).length;
+  const nbJoursFeriesNonTravailles = nbJoursFeries - nbFeriesTravailles;
+
+  const quota = 35 - 7 * (nbJoursFeriesNonTravailles + nbCongesPayes);
+
   document.getElementById("totalEffectue").textContent = formatHeure(total);
   document.getElementById("reste").textContent = formatHeure(Math.max(quota - total, 0));
   sauvegarder();
