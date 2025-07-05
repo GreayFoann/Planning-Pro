@@ -1,5 +1,3 @@
-Je te renvoi le script en entier. Peux tu me l’implémenter dedans et me le renvoyer en entier s’il te plaît ? Merci :
-
 const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
 let semaineOffset = 0;
 if (localStorage.getItem("derniereSemaineOffset")) {
@@ -95,21 +93,25 @@ function creerJour(date, data = {}) {
   const checkboxTravail = container.querySelector(".jourTravaille");
   const checkboxConge = container.querySelector(".congePaye");
 
+  function majEtatInputs() {
+    const actif = checkboxTravail.checked;
+    const inputs = container.querySelectorAll("input[type=time]");
+    inputs.forEach(input => input.disabled = !actif);
+  }
+
   checkboxTravail.addEventListener("change", () => {
-    const actifs = checkboxTravail.checked;
-    container.querySelectorAll("input[type=time]").forEach(input => input.disabled = !actifs);
-    if (!actifs) checkboxConge.checked = false;
+    if (checkboxTravail.checked) {
+      checkboxConge.checked = false;
+    }
+    majEtatInputs();
     calculerTotaux();
   });
 
   checkboxConge.addEventListener("change", () => {
     if (checkboxConge.checked) {
       checkboxTravail.checked = false;
-      container.querySelectorAll("input[type=time]").forEach(input => input.disabled = true);
-    } else {
-      checkboxTravail.checked = true;
-      container.querySelectorAll("input[type=time]").forEach(input => input.disabled = false);
     }
+    majEtatInputs();
     calculerTotaux();
   });
 
