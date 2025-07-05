@@ -8,6 +8,15 @@ function getDateDuLundi(offset = 0) {
   return new Date(d.setDate(diff));
 }
 
+function getNumeroSemaine(d) {
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const jour = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() + 4 - jour);
+  const anneeDebut = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  const numero = Math.ceil(((date - anneeDebut) / 86400000 + 1) / 7);
+  return numero;
+}
+
 function getDateForJour(lundi, idx) {
   const d = new Date(lundi);
   d.setDate(lundi.getDate() + idx);
@@ -111,7 +120,8 @@ function creerJour(date, data = {}) {
 function charger() {
   planningEl.innerHTML = "";
   const lundi = getDateDuLundi(semaineOffset);
-  periodeEl.textContent = `Semaine du ${lundi.toLocaleDateString()} au ${getDateForJour(lundi,4).toLocaleDateString()}`;
+  const numero = getNumeroSemaine(lundi);
+periodeEl.textContent = `Semaine ${numero} — du ${lundi.toLocaleDateString()} au ${getDateForJour(lundi,4).toLocaleDateString()}`;
   const saved = loadWeek(lundi);
   jours.forEach((_, i) => planningEl.appendChild(creerJour(getDateForJour(lundi, i), saved[i])));
   calculer();
