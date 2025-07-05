@@ -94,15 +94,16 @@ button {
 .top-bar {
   display: flex;
   justify-content: flex-end;
-  padding: 1rem;
+  align-items: center;
+  padding: 0.5rem 1rem;
 }
 
 #toggleTheme {
   background: none;
   border: none;
-  font-size: 1.8rem;
+  font-size: 1.2rem; /* plus petit */
   cursor: pointer;
-  background-color: transparent;
+  padding: 0.3rem 0.5rem;
   color: inherit;
 }
 
