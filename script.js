@@ -1,300 +1,196 @@
+// — dateUtils —
 const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
-let semaineOffset;
-
-const derniereSemaineOffset = localStorage.getItem("derniereSemaineOffset");
-
-if (derniereSemaineOffset !== null) {
-  semaineOffset = parseInt(derniereSemaineOffset, 10);
-} else {
-  semaineOffset = 0;
-}
-
-const planning = document.getElementById("planning");
-const periodeSemaine = document.getElementById("periodeSemaine");
 
 function getDateDuLundi(offset = 0) {
-  const date = new Date();
-  date.setDate(date.getDate() + offset * 7);
-  const day = date.getDay();
-  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-  return new Date(date.setDate(diff));
+  const d = new Date();
+  d.setDate(d.getDate() + offset * 7);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  return new Date(d.setDate(diff));
 }
 
-function getDateForJour(lundi, index) {
-  const date = new Date(lundi);
-  date.setDate(lundi.getDate() + index);
-  return date;
+function getDateForJour(lundi, idx) {
+  const d = new Date(lundi);
+  d.setDate(lundi.getDate() + idx);
+  return d;
 }
 
-function formatDateComplete(date) {
-  return date.toLocaleDateString("fr-FR", {
+function formatDateComplete(d) {
+  return d.toLocaleDateString("fr-FR", {
     weekday: "long", day: "2-digit", month: "long", year: "numeric"
   });
 }
 
-function estJourFerie(date) {
-  const annee = date.getFullYear();
-  const jour = date.getDate();
-  const mois = date.getMonth() + 1;
-
-  const feries = [`1-1`, `1-5`, `8-5`, `14-7`, `15-8`, `1-11`, `11-11`, `25-12`];
-  const paques = calculerPaques(annee);
-  const joursMobiles = [
-    new Date(paques),
-    new Date(paques.getTime() + 1 * 86400000),
-    new Date(paques.getTime() + 39 * 86400000),
-    new Date(paques.getTime() + 50 * 86400000)
-  ];
-
-  const cle = `${jour}-${mois}`;
-  if (feries.includes(cle)) return true;
-  return joursMobiles.some(d => d.getDate() === jour && d.getMonth() === mois - 1);
-}
-
 function calculerPaques(annee) {
-  const f = Math.floor;
-  const G = annee % 19;
-  const C = f(annee / 100);
-  const H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30;
-  const I = H - f(H / 28) * (1 - f(29 / (H + 1)) * f((21 - G) / 11));
-  const J = (annee + f(annee / 4) + I + 2 - C + f(C / 4)) % 7;
-  const L = I - J;
-  const mois = 3 + f((L + 40) / 44);
-  const jour = L + 28 - 31 * f(mois / 4);
-  return new Date(annee, mois - 1, jour);
+  const f = Math.floor, G = annee % 19, C = f(annee / 100);
+  const H = (C - f(C/4) - f((8*C+13)/25) + 19*G + 15) % 30;
+  const I = H - f(H/28)*(1 - f(29/(H+1))*f((21-G)/11));
+  const J = (annee + f(annee/4) + I + 2 - C + f(C/4)) % 7;
+  const L = I - J, m = 3 + f((L + 40)/44), day = L + 28 - 31*f(m/4);
+  return new Date(annee, m - 1, day);
 }
 
+function estJourFerie(d) {
+  const a = d.getFullYear(), j = d.getDate(), m = d.getMonth() + 1;
+  const cle = `${j}-${m}`, fixes = ["1-1","1-5","8-5","14-7","15-8","1-11","11-11","25-12"];
+  if (fixes.includes(cle)) return true;
+  const p = calculerPaques(a).getTime();
+  return [0,1,39,50].some(off => {
+    const dd = new Date(p + off * 86400000);
+    return dd.getDate() === j && dd.getMonth() === m - 1;
+  });
+}
+
+// — storage —
 function keySemaine(lundi) {
   return "planning_" + lundi.toISOString().split("T")[0];
 }
 
-function creerJour(date, data = {}) {
-  const nomComplet = formatDateComplete(date);
-  const ferie = estJourFerie(date);
-  const container = document.createElement("div");
-  container.className = "day";
-  if (ferie) container.classList.add("ferie");
-
-  const jourTravaille = data.jourTravaille ?? !ferie;
-  const congePaye = data.congePaye ?? false;
-
-  container.innerHTML = `
-    <h2>${nomComplet}</h2>
-    <div class="inputs">
-      <label>Matin :</label>
-      <input type="time" class="debutMatin" value="${data.matinDebut || ""}" />
-      <input type="time" class="finMatin" value="${data.matinFin || ""}" />
-      <label>Après-midi :</label>
-      <input type="time" class="debutAprem" value="${data.apremDebut || ""}" />
-      <input type="time" class="finAprem" value="${data.apremFin || ""}" />
-    </div>
-    <div class="checkboxes">
-      <label><input type="checkbox" class="jourTravaille" ${jourTravaille ? "checked" : ""}> Jour travaillé</label>
-      <label><input type="checkbox" class="congePaye" ${congePaye ? "checked" : ""}> Congé payé</label>
-    </div>
-    <div class="total">Total : <span class="totalJour">0h00min</span></div>
-  `;
-
-  const checkboxTravail = container.querySelector(".jourTravaille");
-  const checkboxConge = container.querySelector(".congePaye");
-
-  function majEtatInputs() {
-    const actif = checkboxTravail.checked;
-    const inputs = container.querySelectorAll("input[type=time]");
-    inputs.forEach(input => input.disabled = !actif);
-  }
-
-  checkboxTravail.addEventListener("change", () => {
-    if (checkboxTravail.checked) {
-      checkboxConge.checked = false;
-    }
-    majEtatInputs();
-    calculerTotaux();
-  });
-
-  checkboxConge.addEventListener("change", () => {
-    if (checkboxConge.checked) {
-      checkboxTravail.checked = false;
-    }
-    majEtatInputs();
-    calculerTotaux();
-  });
-
-  container.querySelectorAll("input[type=time]").forEach(input => {
-    input.disabled = !jourTravaille;
-    input.addEventListener("change", calculerTotaux);
-  });
-
-  return container;
+function saveWeek(lundi, data) {
+  localStorage.setItem(keySemaine(lundi), JSON.stringify(data));
+  localStorage.setItem("derniereSemaineOffset", semaineOffset);
 }
 
-function formatHeure(decimal) {
-  const heures = Math.floor(decimal);
-  const minutes = Math.round((decimal - heures) * 60);
-  return `${heures}h${minutes.toString().padStart(2, "0")}min`;
+function loadWeek(lundi) {
+  return JSON.parse(localStorage.getItem(keySemaine(lundi)) || '[]');
 }
+
+// — UI & logique —
+const planningEl = document.getElementById("planning");
+const periodeEl = document.getElementById("periodeSemaine");
+const moisSel = document.getElementById("mois");
+const anneeSel = document.getElementById("annee");
+const toggleBg = document.getElementById("toggleTheme");
+let semaineOffset = parseInt(localStorage.getItem("derniereSemaineOffset") || 0, 10);
 
 function diffHeures(h1, h2) {
   if (!h1 || !h2) return 0;
-  const [h1h, h1m] = h1.split(":").map(Number);
-  const [h2h, h2m] = h2.split(":").map(Number);
-  return ((h2h * 60 + h2m) - (h1h * 60 + h1m)) / 60;
+  const [h,m] = h1.split(":"), [H,M] = h2.split(":");
+  return ((+H*60 + +M) - (+h*60 + +m)) / 60;
+}
+function formatHeure(val) {
+  const h = Math.floor(val), m = Math.round((val-h)*60);
+  return `${h}h${String(m).padStart(2,"0")}min`;
 }
 
-function calculerTotaux() {
-  const joursDivs = document.querySelectorAll(".day");
-  let total = 0;
-  let nbFeriesTravailles = 0;
-  let nbCongesPayes = 0;
+function creerJour(date, data = {}) {
+  const ferie = estJourFerie(date);
+  const jourTrav = data.jourTravaille ?? !ferie;
+  const conge = data.congePaye || false;
+  const div = document.createElement("div");
+  div.className = "day" + (ferie ? " ferie" : "");
+  div.innerHTML = `
+    <h2>${formatDateComplete(date)}</h2>
+    <div class="inputs">
+      <label>Matin :</label><input type="time" class="debutMatin" value="${data.matinDebut || ""}" />
+      <input type="time" class="finMatin" value="${data.matinFin || ""}" />
+      <label>Après-midi :</label><input type="time" class="debutAprem" value="${data.apremDebut || ""}" />
+      <input type="time" class="finAprem" value="${data.apremFin || ""}" />
+    </div>
+    <div class="checkboxes">
+      <label><input type="checkbox" class="jourTravaille" ${jourTrav?"checked":""}/> Jour travaillé</label>
+      <label><input type="checkbox" class="congePaye" ${conge?"checked":""}/> Congé payé</label>
+    </div>
+    <div class="total">Total : <span class="totalJour">0h00min</span></div>
+  `;
+  const ct = div.querySelector(".jourTravaille");
+  const cp = div.querySelector(".congePaye");
+  const times = [...div.querySelectorAll("input[type=time]")];
 
-  joursDivs.forEach(day => {
-    const matinDebut = day.querySelector(".debutMatin").value;
-    const matinFin = day.querySelector(".finMatin").value;
-    const apremDebut = day.querySelector(".debutAprem").value;
-    const apremFin = day.querySelector(".finAprem").value;
+  function majInputs() {
+    const actif = ct.checked;
+    times.forEach(i => i.disabled = !actif);
+  }
 
-    const travaille = day.querySelector(".jourTravaille").checked;
-    const conge = day.querySelector(".congePaye").checked;
+  ct.addEventListener("change", () => { if (ct.checked) cp.checked = false; majInputs(); calculer(); });
+  cp.addEventListener("change", () => { if (cp.checked) ct.checked = false; majInputs(); calculer(); });
+  times.forEach(i=>i.addEventListener("change", calculer));
 
-    let heuresJour = 0;
-    if (conge) {
-      heuresJour = 7;
-      nbCongesPayes++;
-    } else if (travaille) {
-      heuresJour =
-        diffHeures(matinDebut, matinFin) + diffHeures(apremDebut, apremFin);
-      if (day.classList.contains("ferie")) nbFeriesTravailles++;
-    }
-
-    total += heuresJour;
-    day.querySelector(".totalJour").textContent = formatHeure(heuresJour);
-  });
-
-  const nbJoursFeries = Array.from(joursDivs).filter(d => d.classList.contains("ferie")).length;
-  const nbJoursFeriesNonTravailles = nbJoursFeries - nbFeriesTravailles;
-
-  const quota = 35 - 7 * (nbJoursFeriesNonTravailles + nbCongesPayes);
-
-  document.getElementById("totalEffectue").textContent = formatHeure(total);
-  document.getElementById("reste").textContent = formatHeure(Math.max(quota - total, 0));
-  sauvegarder();
-}
-
-function sauvegarder() {
-  const lundi = getDateDuLundi(semaineOffset);
-  const data = [];
-  const joursDivs = document.querySelectorAll(".day");
-
-  joursDivs.forEach(day => {
-    data.push({
-      matinDebut: day.querySelector(".debutMatin").value,
-      matinFin: day.querySelector(".finMatin").value,
-      apremDebut: day.querySelector(".debutAprem").value,
-      apremFin: day.querySelector(".finAprem").value,
-      jourTravaille: day.querySelector(".jourTravaille").checked,
-      congePaye: day.querySelector(".congePaye").checked
-    });
-  });
-
-  localStorage.setItem(keySemaine(lundi), JSON.stringify(data));
-  localStorage.setItem("derniereSemaineOffset", semaineOffset.toString());
+  majInputs();
+  return div;
 }
 
 function charger() {
-  planning.innerHTML = "";
+  planningEl.innerHTML = "";
   const lundi = getDateDuLundi(semaineOffset);
-  const saved = JSON.parse(localStorage.getItem(keySemaine(lundi)) || "[]");
+  periodeEl.textContent = `Semaine du ${lundi.toLocaleDateString()} au ${getDateForJour(lundi,4).toLocaleDateString()}`;
+  const saved = loadWeek(lundi);
+  jours.forEach((_, i) => planningEl.appendChild(creerJour(getDateForJour(lundi, i), saved[i])));
+  calculer();
+  remplirSelect();
+}
 
-  jours.forEach((jour, i) => {
-    const date = getDateForJour(lundi, i);
-    const data = saved[i] || {};
-    const el = creerJour(date, data);
-    planning.appendChild(el);
+function calculer() {
+  const days = [...document.querySelectorAll(".day")];
+  let total=0, nFerieTrav=0, nConge=0;
+  days.forEach(d => {
+    const ct = d.querySelector(".jourTravaille").checked;
+    const cp = d.querySelector(".congePaye").checked;
+    const vals = ["debutMatin","finMatin","debutAprem","finAprem"]
+      .map(cl => d.querySelector("."+cl).value);
+    let h=0;
+    if(cp){ h=7; nConge++; }
+    else if(ct){ h = diffHeures(vals[0],vals[1])+diffHeures(vals[2],vals[3]); if (d.classList.contains("ferie")) nFerieTrav++; }
+    total+=h;
+    d.querySelector(".totalJour").textContent = formatHeure(h);
   });
-
-  const dimanche = getDateForJour(lundi, 4);
-  periodeSemaine.textContent = `Semaine du ${lundi.toLocaleDateString()} au ${dimanche.toLocaleDateString()}`;
-  calculerTotaux();
+  const nFerie = days.filter(d=>d.classList.contains("ferie")).length;
+  const quota = 35 - 7*(nFerie - nFerieTrav + nConge);
+  document.getElementById("totalEffectue").textContent = formatHeure(total);
+  document.getElementById("reste").textContent = formatHeure(Math.max(quota - total,0));
+  saveWeek(getDateDuLundi(semaineOffset), days.map(d => ({
+    matinDebut: d.querySelector(".debutMatin").value,
+    matinFin: d.querySelector(".finMatin").value,
+    apremDebut: d.querySelector(".debutAprem").value,
+    apremFin: d.querySelector(".finAprem").value,
+    jourTravaille: d.querySelector(".jourTravaille").checked,
+    congePaye: d.querySelector(".congePaye").checked
+  })));
 }
 
-function changerSemaine(delta) {
-  semaineOffset += delta;
-  charger();
-}
+function changerSemaine(d) { semaineOffset+=d; charger(); }
+function allerAuMois(){ semaineOffset = Math.floor((new Date(parseInt(anneeSel.value),parseInt(moisSel.value)-1,1)-getDateDuLundi(0))/(7*86400000)); charger(); }
 
-function allerAuMois() {
-  const m = parseInt(document.getElementById("mois").value, 10);
-  const a = parseInt(document.getElementById("annee").value, 10);
-  const target = new Date(a, m - 1, 1);
-  const lundiRef = getDateDuLundi(0);
-  const diff = Math.floor((target - lundiRef) / (7 * 86400000));
-  semaineOffset = diff;
-  charger();
-}
-
-function remplirSelecteursMoisAnnee() {
-  const moisSel = document.getElementById("mois");
-  const anneeSel = document.getElementById("annee");
+function remplirSelect(){
+  moisSel.innerHTML=""; anneeSel.innerHTML="";
   const now = new Date();
-  for (let m = 0; m < 12; m++) {
-    const opt = document.createElement("option");
-    opt.value = m + 1;
-    opt.textContent = new Date(2000, m, 1).toLocaleDateString("fr-FR", { month: "long" });
-    moisSel.appendChild(opt);
-  }
-  for (let y = now.getFullYear() - 2; y <= now.getFullYear() + 2; y++) {
-    const opt = document.createElement("option");
-    opt.value = y;
-    opt.textContent = y;
-    anneeSel.appendChild(opt);
-  }
-  moisSel.value = (now.getMonth() + 1).toString();
-  anneeSel.value = now.getFullYear().toString();
+  for(let m=1;m<=12;m++){ moisSel.add(new Option(new Date(2000,m-1,1).toLocaleString("fr-FR",{month:"long"}),m)); }
+  for(let y=now.getFullYear()-2;y<=now.getFullYear()+2;y++){ anneeSel.add(new Option(y,y)); }
+  const d = getDateDuLundi(semaineOffset);
+  moisSel.value = d.getMonth()+1;
+  anneeSel.value = d.getFullYear();
 }
 
-function exportCSV() {
-  const lundi = getDateDuLundi(semaineOffset);
-  const rows = [["Jour", "Date", "Matin début", "Matin fin", "AM début", "AM fin", "Total", "Jour travaillé", "Congé payé"]];
-  const joursDivs = document.querySelectorAll(".day");
-
-  joursDivs.forEach((day, i) => {
-    const date = getDateForJour(lundi, i);
-    const nom = jours[i];
-    const matinDebut = day.querySelector(".debutMatin").value;
-    const matinFin = day.querySelector(".finMatin").value;
-    const apremDebut = day.querySelector(".debutAprem").value;
-    const apremFin = day.querySelector(".finAprem").value;
-    const total = day.querySelector(".totalJour").textContent;
-    const travaille = day.querySelector(".jourTravaille").checked ? "Oui" : "Non";
-    const conge = day.querySelector(".congePaye").checked ? "Oui" : "Non";
-
-    rows.push([nom, date.toLocaleDateString(), matinDebut, matinFin, apremDebut, apremFin, total, travaille, conge]);
+function exportCSV(){
+  const l = getDateDuLundi(semaineOffset);
+  const rows = [["Jour","Date","Début matin","Fin matin","AM début","AM fin","Total","Trav","Congé"]];
+  document.querySelectorAll(".day").forEach((d,i)=>{
+    const vals = ["debutMatin","finMatin","debutAprem","finAprem"]
+      .map(cl=>d.querySelector("."+cl).value);
+    rows.push([
+      jours[i],
+      getDateForJour(l,i).toLocaleDateString(),
+      ...vals,
+      d.querySelector(".totalJour").textContent,
+      d.querySelector(".jourTravaille").checked?"Oui":"Non",
+      d.querySelector(".congePaye").checked?"Oui":"Non"
+    ]);
   });
-
-  const csv = rows.map(row => row.join(";")).join("\n");
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `planning_${lundi.toISOString().split("T")[0]}.csv`;
+  const csv = rows.map(r=>r.join(";")).join("\n");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv]));
+  a.download = `planning_${l.toISOString().split("T")[0]}.csv`;
   a.click();
-  URL.revokeObjectURL(url);
 }
 
-remplirSelecteursMoisAnnee();
+(function initTheme(){
+  if(localStorage.getItem("theme")==="dark"){ document.body.classList.add("dark"); toggleBg.textContent="☀️"; }
+  toggleBg.addEventListener("click", ()=>{
+    const dk = document.body.classList.toggle("dark");
+    localStorage.setItem("theme", dk?"dark":"light");
+    toggleBg.textContent = dk?"☀️":"🌙";
+  });
+})();
+
+remplirSelect();
 charger();
-
-const themeToggle = document.getElementById("toggleTheme");
-
-if (localStorage.getItem("theme") === "dark") {
-  document.body.classList.add("dark");
-  themeToggle.textContent = "☀️";
-} else {
-  themeToggle.textContent = "🌙";
-}
-
-themeToggle.addEventListener("click", () => {
-  const isDark = document.body.classList.toggle("dark");
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-  themeToggle.textContent = isDark ? "☀️" : "🌙";
-});
