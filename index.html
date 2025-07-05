@@ -38,9 +38,17 @@
     <section class="totaux">
       <p><strong>Total effectué :</strong> <span id="totalEffectue">0h00min</span></p>
       <p><strong>Heures restantes :</strong> <span id="reste">35h00min</span></p>
-      <button onclick="copierHorairesLundi()">📄 Copier horaires du lundi</button>
-      <button onclick="exportCSV()">📤 Exporter en CSV</button>
-    </section>
+
+      <div class="resume-semaine">
+        <p><strong>Jours travaillés :</strong> <span id="nbTravail">0</span></p>
+        <p><strong>Congés payés :</strong> <span id="nbConge">0</span></p>
+        <p><strong>Jours fériés :</strong> <span id="nbFerie">0</span></p>
+        <p><strong>Fériés travaillés :</strong> <span id="nbFerieTrav">0</span></p>
+        <p><strong>Quota ajusté :</strong> <span id="quotaHebdo">35h00min</span></p>
+    </div>
+
+    <button onclick="exportCSV()">📤 Exporter en CSV</button>
+  </section>
 
     <div class="signature">Aymerik G.</div>
   </main>
