@@ -94,10 +94,30 @@ function creerJour(date, data = {}) {
 
   dayDiv.innerHTML += `
     <div class="checkboxes">
-      <label><input type="checkbox" class="jourTravaille"> Jour travaillé</label>
-      <label><input type="checkbox" class="congePaye"> Congé payé</label>
+      <label>
+        <input type="checkbox" class="jourTravaille"> Jour travaillé
+      </label>
+      <label>
+        <input type="checkbox" class="congePaye"> Congé payé
+      </label>
     </div>
   `;
+
+  const travailCheckbox = dayDiv.querySelector(".jourTravaille");
+  const congeCheckbox = dayDiv.querySelector(".congePaye");
+
+  travailCheckbox.checked = !isFerie;
+  congeCheckbox.checked = false;
+
+  congeCheckbox.addEventListener("change", () => {
+    if (congeCheckbox.checked) {
+      travailCheckbox.checked = false;
+      const totalJour = dayDiv.querySelector(".totalJour");
+      if (totalJour) totalJour.textContent = "7h00";
+    } else {
+      calculerTotaux();
+    }
+  });
   container.querySelectorAll("input").forEach(input => {
     input.addEventListener("change", calculerTotaux);
   });
