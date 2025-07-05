@@ -279,10 +279,8 @@ function exportCSV() {
 remplirSelecteursMoisAnnee();
 charger();
 
-// Gestion du thème sombre
 const themeToggle = document.getElementById("toggleTheme");
 
-// Appliquer le thème sauvegardé au chargement
 if (localStorage.getItem("theme") === "dark") {
   document.body.classList.add("dark");
   themeToggle.textContent = "☀️";
