@@ -151,16 +151,38 @@ body.dark input[type="time"] {
   border: 1px solid #555;
 }
 
+.week-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: nowrap;
+}
+
 .arrow-button {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: white;
+  color: black;
   cursor: pointer;
-  padding: 0.2rem 0.5rem;
-  margin: 0 0.5rem;
-  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.2s;
 }
 
 .arrow-button:hover {
-  transform: scale(1.2);
+  background: #f0f0f0;
+}
+
+#periodeSemaine {
+  font-weight: bold;
+  font-size: 1rem;
+  white-space: nowrap;
 }
