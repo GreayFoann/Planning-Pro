@@ -278,3 +278,19 @@ function exportCSV() {
 
 remplirSelecteursMoisAnnee();
 charger();
+
+const toggleButton = document.getElementById("toggleTheme");
+
+function appliquerThemeSombre(active) {
+  document.body.classList.toggle("dark", active);
+  localStorage.setItem("themeSombre", active ? "1" : "0");
+}
+
+toggleButton.addEventListener("click", () => {
+  const actif = !document.body.classList.contains("dark");
+  appliquerThemeSombre(actif);
+});
+
+if (localStorage.getItem("themeSombre") === "1") {
+  appliquerThemeSombre(true);
+}
