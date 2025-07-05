@@ -106,11 +106,11 @@ h1 {
 }
 
 .day {
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid #ccc;
   padding: 1rem;
-  background: var(--background);
-  transition: background 0.3s;
+  margin-bottom: 1rem;
+  position: relative;
+  background-color: var(--day-bg);
 }
 
 .day.ferie {
@@ -153,7 +153,9 @@ h1 {
 }
 
 .total {
-  margin-top: 0.5rem;
+  position: absolute;
+  bottom: 0.5rem;
+  right: 1rem;
   font-weight: bold;
 }
 
