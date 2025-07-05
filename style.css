@@ -124,16 +124,11 @@ h1 {
 }
 
 .inputs {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, auto 1fr);
   gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.periode {
-  display: flex;
   align-items: center;
-  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .inputs label {
