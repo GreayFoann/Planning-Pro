@@ -137,14 +137,14 @@ function calculer() {
   document.getElementById("totalEffectue").textContent = formatHeure(total);
   document.getElementById("reste").textContent = formatHeure(Math.max(quota - total,0));
   saveWeek(getDateDuLundi(semaineOffset), days.map(d => ({
-    matinDebut: d.querySelector(".debutMatin").value,
-    matinFin: d.querySelector(".finMatin").value,
-    apremDebut: d.querySelector(".debutAprem").value,
-    apremFin: d.querySelector(".finAprem").value,
-    jourTravaille: d.querySelector(".jourTravaille").checked,
-    congePaye: d.querySelector(".congePaye").checked
-  })));
-}
+  matinDebut: d.querySelector(".debutMatin").value,
+  matinFin: d.querySelector(".finMatin").value,
+  apremDebut: d.querySelector(".debutAprem").value,
+  apremFin: d.querySelector(".finAprem").value,
+  jourTravaille: d.querySelector(".jourTravaille").checked,
+  congePaye: d.querySelector(".congePaye").checked,
+  note: d.querySelector(".noteJour").value
+})));
 
 function changerSemaine(d) { semaineOffset+=d; charger(); }
 function allerAuMois(){ semaineOffset = Math.floor((new Date(parseInt(anneeSel.value),parseInt(moisSel.value)-1,1)-getDateDuLundi(0))/(7*86400000)); charger(); }
