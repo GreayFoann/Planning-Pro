@@ -1,4 +1,3 @@
-// — dateUtils —
 const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
 
 function getDateDuLundi(offset = 0) {
@@ -41,7 +40,6 @@ function estJourFerie(d) {
   });
 }
 
-// — storage —
 function keySemaine(lundi) {
   return "planning_" + lundi.toISOString().split("T")[0];
 }
@@ -55,7 +53,6 @@ function loadWeek(lundi) {
   return JSON.parse(localStorage.getItem(keySemaine(lundi)) || '[]');
 }
 
-// — UI & logique —
 const planningEl = document.getElementById("planning");
 const periodeEl = document.getElementById("periodeSemaine");
 const moisSel = document.getElementById("mois");
