@@ -8,6 +8,15 @@ function getDateDuLundi(offset = 0) {
   return new Date(d.setDate(diff));
 }
 
+function getNumeroSemaine(d) {
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const jour = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() + 4 - jour);
+  const anneeDebut = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  const numero = Math.ceil(((date - anneeDebut) / 86400000 + 1) / 7);
+  return numero;
+}
+
 function getDateForJour(lundi, idx) {
   const d = new Date(lundi);
   d.setDate(lundi.getDate() + idx);
@@ -88,6 +97,7 @@ function creerJour(date, data = {}) {
       <label><input type="checkbox" class="jourTravaille" ${jourTrav?"checked":""}/> Jour travaillé</label>
       <label><input type="checkbox" class="congePaye" ${conge?"checked":""}/> Congé payé</label>
     </div>
+    <div class="note"><label>Note :</label><textarea class="noteJour" rows="2">${data.note || ""}</textarea></div>
     <div class="total">Total : <span class="totalJour">0h00min</span></div>
   `;
   const ct = div.querySelector(".jourTravaille");
@@ -110,11 +120,11 @@ function creerJour(date, data = {}) {
 function charger() {
   planningEl.innerHTML = "";
   const lundi = getDateDuLundi(semaineOffset);
-  periodeEl.textContent = `Semaine du ${lundi.toLocaleDateString()} au ${getDateForJour(lundi,4).toLocaleDateString()}`;
+  const numero = getNumeroSemaine(lundi);
+periodeEl.textContent = `Semaine ${numero} — du ${lundi.toLocaleDateString()} au ${getDateForJour(lundi,4).toLocaleDateString()}`;
   const saved = loadWeek(lundi);
   jours.forEach((_, i) => planningEl.appendChild(creerJour(getDateForJour(lundi, i), saved[i])));
   calculer();
-  remplirSelect();
 }
 
 function calculer() {
@@ -135,15 +145,20 @@ function calculer() {
   const quota = 35 - 7*(nFerie - nFerieTrav + nConge);
   document.getElementById("totalEffectue").textContent = formatHeure(total);
   document.getElementById("reste").textContent = formatHeure(Math.max(quota - total,0));
+  document.getElementById("nbTravail").textContent = days.filter(d => d.querySelector(".jourTravaille").checked).length;
+  document.getElementById("nbConge").textContent = nConge;
+  document.getElementById("nbFerie").textContent = nFerie - nFerieTrav;
+  document.getElementById("nbFerieTrav").textContent = nFerieTrav;
+  document.getElementById("quotaHebdo").textContent = formatHeure(quota);
   saveWeek(getDateDuLundi(semaineOffset), days.map(d => ({
-    matinDebut: d.querySelector(".debutMatin").value,
-    matinFin: d.querySelector(".finMatin").value,
-    apremDebut: d.querySelector(".debutAprem").value,
-    apremFin: d.querySelector(".finAprem").value,
-    jourTravaille: d.querySelector(".jourTravaille").checked,
-    congePaye: d.querySelector(".congePaye").checked
-  })));
-}
+  matinDebut: d.querySelector(".debutMatin").value,
+  matinFin: d.querySelector(".finMatin").value,
+  apremDebut: d.querySelector(".debutAprem").value,
+  apremFin: d.querySelector(".finAprem").value,
+  jourTravaille: d.querySelector(".jourTravaille").checked,
+  congePaye: d.querySelector(".congePaye").checked,
+  note: d.querySelector(".noteJour").value
+})));
 
 function changerSemaine(d) { semaineOffset+=d; charger(); }
 function allerAuMois(){ semaineOffset = Math.floor((new Date(parseInt(anneeSel.value),parseInt(moisSel.value)-1,1)-getDateDuLundi(0))/(7*86400000)); charger(); }
@@ -160,7 +175,7 @@ function remplirSelect(){
 
 function exportCSV(){
   const l = getDateDuLundi(semaineOffset);
-  const rows = [["Jour","Date","Début matin","Fin matin","AM début","AM fin","Total","Trav","Congé"]];
+  const rows = [["Jour","Date","Début matin","Fin matin","AM début","AM fin","Total","Trav","Congé","Note"]];
   document.querySelectorAll(".day").forEach((d,i)=>{
     const vals = ["debutMatin","finMatin","debutAprem","finAprem"]
       .map(cl=>d.querySelector("."+cl).value);
@@ -170,7 +185,8 @@ function exportCSV(){
       ...vals,
       d.querySelector(".totalJour").textContent,
       d.querySelector(".jourTravaille").checked?"Oui":"Non",
-      d.querySelector(".congePaye").checked?"Oui":"Non"
+      d.querySelector(".congePaye").checked?"Oui":"Non",
+      d.querySelector(".noteJour").value
     ]);
   });
   const csv = rows.map(r=>r.join(";")).join("\n");
@@ -188,6 +204,29 @@ function exportCSV(){
     toggleBg.textContent = dk?"☀️":"🌙";
   });
 })();
+
+function copierHorairesLundi() {
+  const days = [...document.querySelectorAll(".day")];
+  const lundi = days[0];
+  const horaires = {
+    matinDebut: lundi.querySelector(".debutMatin").value,
+    matinFin: lundi.querySelector(".finMatin").value,
+    apremDebut: lundi.querySelector(".debutAprem").value,
+    apremFin: lundi.querySelector(".finAprem").value
+  };
+
+  for (let i = 1; i < days.length; i++) {
+    const d = days[i];
+    if (d.querySelector(".jourTravaille").checked && !d.querySelector(".congePaye").checked) {
+      d.querySelector(".debutMatin").value = horaires.matinDebut;
+      d.querySelector(".finMatin").value = horaires.matinFin;
+      d.querySelector(".debutAprem").value = horaires.apremDebut;
+      d.querySelector(".finAprem").value = horaires.apremFin;
+    }
+  }
+
+  calculer();
+}
 
 remplirSelect();
 charger();
