@@ -58,7 +58,13 @@ const periodeEl = document.getElementById("periodeSemaine");
 const moisSel = document.getElementById("mois");
 const anneeSel = document.getElementById("annee");
 const toggleBg = document.getElementById("toggleTheme");
-let semaineOffset = parseInt(localStorage.getItem("derniereSemaineOffset") || 0, 10);
+let semaineOffset;
+const savedOffset = localStorage.getItem("derniereSemaineOffset");
+if (savedOffset !== null) {
+  semaineOffset = parseInt(savedOffset, 10);
+} else {
+  semaineOffset = 0; // semaine actuelle
+}
 
 function diffHeures(h1, h2) {
   if (!h1 || !h2) return 0;
@@ -188,6 +194,27 @@ function exportCSV(){
     toggleBg.textContent = dk?"☀️":"🌙";
   });
 })();
+
+function sauvegarderManuellement() {
+  const lundi = getDateDuLundi(semaineOffset);
+  const days = [...document.querySelectorAll(".day")];
+  const data = days.map(d => ({
+    matinDebut: d.querySelector(".debutMatin").value,
+    matinFin: d.querySelector(".finMatin").value,
+    apremDebut: d.querySelector(".debutAprem").value,
+    apremFin: d.querySelector(".finAprem").value,
+    jourTravaille: d.querySelector(".jourTravaille").checked,
+    congePaye: d.querySelector(".congePaye").checked
+  }));
+  saveWeek(lundi, data);
+  alert("Semaine sauvegardée !");
+}
+
+function annulerSaisie() {
+  if (confirm("Annuler les modifications et recharger la semaine sauvegardée ?")) {
+    charger();
+  }
+}
 
 remplirSelect();
 charger();
