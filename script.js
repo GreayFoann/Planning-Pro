@@ -228,4 +228,5 @@ function copierHorairesLundi() {
 
   calculer();
 }
+
 charger();
