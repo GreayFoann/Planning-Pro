@@ -206,8 +206,6 @@ function exportCSV(){
   });
 })();
 
-charger();
-
 function copierHorairesLundi() {
   const days = [...document.querySelectorAll(".day")];
   const lundi = days[0];
@@ -230,3 +228,4 @@ function copierHorairesLundi() {
 
   calculer();
 }
+charger();
