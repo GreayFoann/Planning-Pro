@@ -1,170 +1,191 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+:root {
+  --primary: #333;
+  --background: #fff;
+  --text: #000;
+  --accent: #007bff;
+  --border: #ccc;
+  --ferie-bg: #f8d7da;
+  --ferie-text: #721c24;
+}
+
+body.dark {
+  --primary: #ccc;
+  --background: #121212;
+  --text: #eee;
+  --accent: #0d6efd;
+  --border: #444;
+  --ferie-bg: #5c2c31;
+  --ferie-text: #f5c6cb;
 }
 
 body {
-  background: #f9f9f9;
-  color: #333;
-  padding: 20px;
-  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--background);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
+
+header.top-bar {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: flex-end;
+  padding: 0.5rem;
+  background: var(--primary);
 }
 
-header {
-  width: 100%;
-  max-width: 900px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-header h1 {
-  font-size: 1.5rem;
-  color: #222;
-}
-
-button {
-  background-color: #007bff;
+#toggleTheme {
+  background: transparent;
   border: none;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 6px;
+  font-size: 1.2rem;
   cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #0056b3;
+  color: var(--text);
 }
 
 main {
-  width: 100%;
+  padding: 1rem;
   max-width: 900px;
+  margin: auto;
 }
 
-#joursContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 15px;
-  margin-bottom: 30px;
+h1 {
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
-.jour {
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 1px 6px rgb(0 0 0 / 0.1);
+.select-date {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
 }
 
-.jour.ferie {
-  background: #ffe6e6;
-  border: 1px solid #ff4d4d;
+.select-date select,
+.select-date button {
+  padding: 0.4rem;
+  font-size: 1rem;
 }
 
-.jour header {
-  font-weight: 700;
+.week-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+#periodeSemaine {
+  font-weight: bold;
+  font-size: 1rem;
+  white-space: nowrap;
+  min-width: 120px;
+}
+
+.arrow-button {
+  padding: 0.4rem 0.8rem;
+  background-color: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.arrow-button:hover {
+  opacity: 0.9;
+}
+
+#planning {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.day {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  background: var(--background);
+  transition: background 0.3s;
+}
+
+.day.ferie {
+  background-color: var(--ferie-bg);
+  color: var(--ferie-text);
+}
+
+.day h2 {
+  margin-top: 0;
   font-size: 1.1rem;
-  margin-bottom: 10px;
-  color: #444;
 }
 
 .inputs {
-  display: grid;
-  grid-template-columns: 50px 1fr 1fr;
-  gap: 6px 10px;
-  align-items: center;
-  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .inputs label {
-  font-size: 0.85rem;
-  color: #666;
+  font-weight: bold;
 }
 
 .inputs input[type="time"] {
-  padding: 4px 6px;
-  font-size: 0.9rem;
-  border: 1px solid #ccc;
+  padding: 0.3rem;
+  font-size: 1rem;
+  border: 1px solid var(--border);
   border-radius: 4px;
+  background: var(--background);
+  color: var(--text);
 }
 
 .checkboxes {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
+  margin-top: 0.5rem;
 }
 
 .checkboxes label {
-  font-size: 0.9rem;
-  user-select: none;
-  display: flex;
-  align-items: center;
-}
-
-.checkboxes input[type="checkbox"] {
-  margin-right: 6px;
-  cursor: pointer;
-  width: 18px;
-  height: 18px;
-}
-
-.note {
-  margin-bottom: 8px;
-}
-
-.note textarea {
-  width: 100%;
-  resize: vertical;
-  min-height: 40px;
-  font-size: 0.9rem;
-  padding: 6px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  margin-right: 1rem;
+  font-size: 0.95rem;
 }
 
 .total {
-  font-weight: 600;
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+
+.totaux {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.totaux p {
+  margin: 0.3rem 0;
+  font-size: 1.1rem;
+}
+
+.totaux button {
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
   font-size: 1rem;
-  color: #222;
-  margin-top: auto;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.totaux button:hover {
+  opacity: 0.9;
+}
+
+.signature {
+  margin-top: 3rem;
   text-align: right;
-}
-
-#totaux {
-  background: white;
-  padding: 15px 20px;
-  border-radius: 10px;
-  box-shadow: 0 1px 8px rgb(0 0 0 / 0.1);
-  max-width: 900px;
-  width: 100%;
-  font-size: 1rem;
-  color: #333;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px 40px;
-  justify-content: center;
-}
-
-#totaux p {
-  flex: 1 1 160px;
-  font-weight: 600;
-}
-
-@media (max-width: 500px) {
-  #joursContainer {
-    grid-template-columns: 1fr;
-  }
-  #totaux {
-    flex-direction: column;
-    gap: 10px 0;
-  }
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--text);
 }

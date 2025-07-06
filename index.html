@@ -2,28 +2,45 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Planning Hebdomadaire</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Planning Hebdomadaire - 35h</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <button id="prevSemaine">← Semaine précédente</button>
-    <h1 id="semaineAffichee">Semaine du ...</h1>
-    <button id="nextSemaine">Semaine suivante →</button>
+  <header class="top-bar">
+    <button id="toggleTheme" aria-label="Changer de thème">🌙</button>
   </header>
+
   <main>
-    <div id="joursContainer"></div>
-    <section id="totaux">
-      <p>Total effectué : <span id="totalEffectue">0h00min</span></p>
-      <p>Heures restantes : <span id="reste">0h00min</span></p>
-      <p>Quota hebdomadaire ajusté : <span id="quotaHebdo">35h00min</span></p>
-      <p>Jours travaillés : <span id="nbTravail">0</span></p>
-      <p>Congés payés : <span id="nbConge">0</span></p>
-      <p>Jours fériés non travaillés : <span id="nbFerie">0</span></p>
-      <p>Jours fériés travaillés : <span id="nbFerieTrav">0</span></p>
+    <h1>Planning Hebdomadaire</h1>
+
+    <div class="select-date">
+      <label for="mois">Mois :</label>
+      <select id="mois"></select>
+
+      <label for="annee">Année :</label>
+      <select id="annee"></select>
+
+      <button class="arrow-button" onclick="allerAuMois()">Go</button>
+    </div>
+
+    <div class="week-nav">
+      <button class="arrow-button" onclick="changerSemaine(-1)">⬅️</button>
+      <span id="periodeSemaine"></span>
+      <button class="arrow-button" onclick="changerSemaine(1)">➡️</button>
+    </div>
+
+    <div id="planning"></div>
+
+    <section class="totaux">
+      <p><strong>Total effectué :</strong> <span id="totalEffectue">0h00min</span></p>
+      <p><strong>Heures restantes :</strong> <span id="reste">35h00min</span></p>
+      <button onclick="exportCSV()">📤 Exporter en CSV</button>
     </section>
+
+    <div class="signature">Aymerik G.</div>
   </main>
+
   <script src="script.js"></script>
 </body>
 </html>
