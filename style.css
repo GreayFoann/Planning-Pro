@@ -189,3 +189,24 @@ h1 {
   font-size: 0.9rem;
   color: var(--text);
 }
+
+.actions-semaine {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.actions-semaine button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--accent);
+  color: white;
+  cursor: pointer;
+}
+
+.actions-semaine button:hover {
+  opacity: 0.9;
+}
