@@ -141,7 +141,6 @@ function calculer() {
   const quota = 35 - 7*(nFerie - nFerieTrav + nConge);
   document.getElementById("totalEffectue").textContent = formatHeure(total);
   document.getElementById("reste").textContent = formatHeure(Math.max(quota - total,0));
-  saveWeek(getDateDuLundi(semaineOffset), days.map(d => ({
     matinDebut: d.querySelector(".debutMatin").value,
     matinFin: d.querySelector(".finMatin").value,
     apremDebut: d.querySelector(".debutAprem").value,
