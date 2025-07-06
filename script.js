@@ -58,7 +58,11 @@ const periodeEl = document.getElementById("periodeSemaine");
 const moisSel = document.getElementById("mois");
 const anneeSel = document.getElementById("annee");
 const toggleBg = document.getElementById("toggleTheme");
-let semaineOffset = parseInt(localStorage.getItem("derniereSemaineOffset") || 0, 10);
+const sauvegarderBtn = document.getElementById("sauvegarder");
+const annulerBtn = document.getElementById("annuler");
+
+let semaineOffset = localStorage.getItem("derniereSemaineOffset");
+semaineOffset = semaineOffset !== null ? parseInt(semaineOffset, 10) : 0;
 
 function diffHeures(h1, h2) {
   if (!h1 || !h2) return 0;
@@ -135,14 +139,6 @@ function calculer() {
   const quota = 35 - 7*(nFerie - nFerieTrav + nConge);
   document.getElementById("totalEffectue").textContent = formatHeure(total);
   document.getElementById("reste").textContent = formatHeure(Math.max(quota - total,0));
-  saveWeek(getDateDuLundi(semaineOffset), days.map(d => ({
-    matinDebut: d.querySelector(".debutMatin").value,
-    matinFin: d.querySelector(".finMatin").value,
-    apremDebut: d.querySelector(".debutAprem").value,
-    apremFin: d.querySelector(".finAprem").value,
-    jourTravaille: d.querySelector(".jourTravaille").checked,
-    congePaye: d.querySelector(".congePaye").checked
-  })));
 }
 
 function changerSemaine(d) { semaineOffset+=d; charger(); }
@@ -188,6 +184,26 @@ function exportCSV(){
     toggleBg.textContent = dk?"☀️":"🌙";
   });
 })();
+
+sauvegarderBtn.addEventListener("click", () => {
+  const lundi = getDateDuLundi(semaineOffset);
+  const data = [...document.querySelectorAll(".day")].map(d => ({
+    matinDebut: d.querySelector(".debutMatin").value,
+    matinFin: d.querySelector(".finMatin").value,
+    apremDebut: d.querySelector(".debutAprem").value,
+    apremFin: d.querySelector(".finAprem").value,
+    jourTravaille: d.querySelector(".jourTravaille").checked,
+    congePaye: d.querySelector(".congePaye").checked
+  }));
+  saveWeek(lundi, data);
+  alert("Semaine sauvegardée !");
+});
+
+annulerBtn.addEventListener("click", () => {
+  if (confirm("Annuler la saisie en cours ? Les données non sauvegardées seront perdues.")) {
+    charger();
+  }
+});
 
 remplirSelect();
 charger();
