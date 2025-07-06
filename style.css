@@ -1,249 +1,171 @@
-:root {
-  --primary: #2c3e50;
-  --background: #f7f9fc;
-  --text: #2d2d2d;
-  --accent: #007bff;
-  --border: #dee2e6;
-  --ferie-bg: #ffe5e5;
-  --ferie-text: #b20000;
-  --card-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  --radius: 8px;
-  --font: 'Inter', sans-serif;
-}
-
-body.dark {
-  --primary: #1e1e1e;
-  --background: #181818;
-  --text: #f0f0f0;
-  --accent: #4dabf7;
-  --border: #444;
-  --ferie-bg: #3b1f1f;
-  --ferie-text: #ffcccc;
-  --card-shadow: 0 2px 8px rgba(255,255,255,0.05);
+/* Reset de base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  font-family: var(--font);
-  margin: 0;
-  padding: 0;
-  background: var(--background);
-  color: var(--text);
-  transition: background 0.3s, color 0.3s;
-}
-
-header.top-bar {
+  background: #f9f9f9;
+  color: #333;
+  padding: 20px;
+  min-height: 100vh;
   display: flex;
-  justify-content: flex-end;
-  padding: 0.5rem 1rem;
-  background: var(--primary);
-}
-
-#toggleTheme {
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: var(--text);
-}
-
-main {
-  padding: 2rem 1rem;
-  max-width: 960px;
-  margin: auto;
-}
-
-h1 {
-  text-align: center;
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 2rem;
-}
-
-.select-date,
-.week-nav {
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  margin-bottom: 1.5rem;
 }
 
-.select-date select,
-.select-date button {
-  padding: 0.5rem 0.8rem;
-  font-size: 1rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--background);
-  color: var(--text);
-  cursor: pointer;
+header {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.arrow-button {
-  padding: 0.5rem 1rem;
-  background-color: var(--accent);
-  color: #fff;
+header h1 {
+  font-size: 1.5rem;
+  color: #222;
+}
+
+button {
+  background-color: #007bff;
   border: none;
-  border-radius: var(--radius);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 1rem;
-  transition: background 0.3s;
+  transition: background-color 0.3s ease;
 }
 
-.arrow-button:hover {
+button:hover {
   background-color: #0056b3;
 }
 
-#periodeSemaine {
-  font-weight: bold;
-  font-size: 1.1rem;
-  white-space: nowrap;
-  min-width: 160px;
+main {
+  width: 100%;
+  max-width: 900px;
 }
 
-#planning {
+#joursContainer {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
 }
 
-@media (min-width: 700px) {
-  #planning {
-    grid-template-columns: 1fr 1fr;
-  }
+.jour {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
-.day {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1rem;
-  background: var(--background);
-  box-shadow: var(--card-shadow);
-  transition: background 0.3s, box-shadow 0.3s;
+.jour.ferie {
+  background: #ffe6e6;
+  border: 1px solid #ff4d4d;
 }
 
-.day.ferie {
-  background-color: var(--ferie-bg);
-  color: var(--ferie-text);
-  border-color: #faa;
-}
-
-.day h2 {
-  margin: 0 0 1rem 0;
+.jour header {
+  font-weight: 700;
   font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #444;
 }
 
 .inputs {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.8rem;
-  margin-bottom: 1rem;
+  grid-template-columns: 50px 1fr 1fr;
+  gap: 6px 10px;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .inputs label {
-  font-weight: 600;
-  grid-column: span 2;
+  font-size: 0.85rem;
+  color: #666;
 }
 
 .inputs input[type="time"] {
-  padding: 0.4rem;
-  font-size: 0.95rem;
-  border: 1px solid var(--border);
+  padding: 4px 6px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  background: var(--background);
-  color: var(--text);
-  width: 100%;
 }
 
 .checkboxes {
-  margin-top: 0.5rem;
   display: flex;
-  gap: 1.5rem;
-  font-size: 0.95rem;
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
 .checkboxes label {
-  cursor: pointer;
-}
-
-.total {
-  margin-top: 0.7rem;
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.totaux {
-  margin-top: 3rem;
-  text-align: center;
-  padding: 1.5rem 0;
-  border-top: 1px solid var(--border);
-}
-
-.totaux p {
-  margin: 0.5rem 0;
-  font-size: 1.15rem;
-}
-
-.totaux button {
-  margin-top: 1rem;
-  padding: 0.7rem 1.5rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: var(--radius);
-  background: var(--accent);
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.totaux button:hover {
-  background-color: #0056b3;
-}
-
-.signature {
-  margin-top: 3rem;
-  text-align: right;
-  font-style: italic;
   font-size: 0.9rem;
-  color: var(--text);
-  opacity: 0.7;
+  user-select: none;
+  display: flex;
+  align-items: center;
+}
+
+.checkboxes input[type="checkbox"] {
+  margin-right: 6px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
 }
 
 .note {
-  margin-top: 0.5rem;
-}
-
-.note label {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 0.2rem;
+  margin-bottom: 8px;
 }
 
 .note textarea {
   width: 100%;
-  font-size: 1rem;
-  padding: 0.4rem;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-  background: var(--background);
-  color: var(--text);
   resize: vertical;
+  min-height: 40px;
+  font-size: 0.9rem;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-.resume-semaine {
-  margin-top: 1rem;
-  padding: 1rem;
-  background-color: var(--background);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0.5rem 1rem;
-  text-align: left;
-  font-size: 0.95rem;
+.total {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #222;
+  margin-top: auto;
+  text-align: right;
 }
 
-.resume-semaine p {
-  margin: 0;
+#totaux {
+  background: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 1px 8px rgb(0 0 0 / 0.1);
+  max-width: 900px;
+  width: 100%;
+  font-size: 1rem;
+  color: #333;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px 40px;
+  justify-content: center;
+}
+
+#totaux p {
+  flex: 1 1 160px;
+  font-weight: 600;
+}
+
+@media (max-width: 500px) {
+  #joursContainer {
+    grid-template-columns: 1fr;
+  }
+  #totaux {
+    flex-direction: column;
+    gap: 10px 0;
+  }
 }
