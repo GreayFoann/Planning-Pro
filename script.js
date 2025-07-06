@@ -125,7 +125,6 @@ periodeEl.textContent = `Semaine ${numero} — du ${lundi.toLocaleDateString()} 
   const saved = loadWeek(lundi);
   jours.forEach((_, i) => planningEl.appendChild(creerJour(getDateForJour(lundi, i), saved[i])));
   calculer();
-  remplirSelect();
 }
 
 function calculer() {
@@ -228,5 +227,5 @@ function copierHorairesLundi() {
 
   calculer();
 }
-
+remplirSelect();
 charger();
