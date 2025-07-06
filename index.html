@@ -1,14 +1,14 @@
-<!DOCTYPE html>
+
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Planning Hebdomadaire - 35h</title>
+  <title>Planning Pro</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="top-bar">
-    <button id="toggleTheme" aria-label="Changer de thème">🌙</button>
+    <button id="toggleTheme" title="Changer de thème">🌙</button>
   </header>
 
   <main>
@@ -17,30 +17,30 @@
     <div class="select-date">
       <label for="mois">Mois :</label>
       <select id="mois"></select>
-
       <label for="annee">Année :</label>
       <select id="annee"></select>
-
-      <button class="arrow-button" onclick="allerAuMois()">Go</button>
+      <button onclick="allerAuMois()">Aller</button>
     </div>
 
     <div class="week-nav">
-      <button class="arrow-button" onclick="changerSemaine(-1)">⬅️</button>
-      <span id="periodeSemaine"></span>
-      <button class="arrow-button" onclick="changerSemaine(1)">➡️</button>
+      <button class="arrow-button" onclick="changerSemaine(-1)">← Semaine précédente</button>
+      <span id="periodeSemaine">Semaine en cours</span>
+      <button class="arrow-button" onclick="changerSemaine(1)">Semaine suivante →</button>
     </div>
 
     <div id="planning"></div>
 
-    <section class="totaux">
+    <div class="totaux">
       <p><strong>Total effectué :</strong> <span id="totalEffectue">0h00min</span></p>
       <p><strong>Heures restantes :</strong> <span id="reste">35h00min</span></p>
-      <button onclick="exportCSV()">📤 Exporter en CSV</button>
-    </section>
+      <button onclick="exportCSV()">Exporter en CSV</button>
+    </div>
 
-    <div class="signature">Aymerik G.</div>
+    <div class="signature">
+      <p>Aymerik G.</p>
+    </div>
   </main>
-
+  
   <script src="script.js"></script>
 </body>
 </html>
