@@ -111,12 +111,6 @@ function creerJour(date, data = {}) {
   cp.addEventListener("change", () => { if (cp.checked) ct.checked = false; majInputs(); calculer(); });
   times.forEach(i=>i.addEventListener("change", calculer));
 
-  const note = document.createElement("textarea");
-  note.className = "note";
-  note.placeholder = "Note...";
-  note.value = data.note || "";
-  div.appendChild(note);
-
   majInputs();
   return div;
   }
