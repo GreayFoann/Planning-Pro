@@ -9,6 +9,14 @@
 <body>
   <header>
     <h1 id="planningName">Mon planning</h1>
+    <div class="theme-controls">
+      <label for="themeSelect">Thème :</label>
+      <select id="themeSelect">
+        <option value="auto">Auto</option>
+        <option value="light">Clair</option>
+        <option value="dark">Sombre</option>
+      </select>
+    </div>
     <button id="settingsBtn">⚙️ Paramètres</button>
   </header>
 
@@ -18,6 +26,9 @@
 
     <label for="yearSelect">Année :</label>
     <select id="yearSelect"></select>
+
+    <button id="prevWeek">← Semaine précédente</button>
+    <button id="nextWeek">Semaine suivante →</button>
   </section>
 
   <section id="weeklyView"></section>
@@ -25,6 +36,7 @@
   <section id="summary">
     <h2>Récapitulatif</h2>
     <p><strong>Total semaine :</strong> <span id="weeklyTotal">0h</span></p>
+    <p><strong>Quota semaine :</strong> <span id="weeklyQuotaDisplay">35h</span></p>
     <p><strong>Total mois :</strong> <span id="monthlyTotal">0h</span></p>
     <p><strong>Total année :</strong> <span id="yearlyTotal">0h</span></p>
     <p><strong>Jours travaillés :</strong> <span id="workedDays">0</span></p>
@@ -34,6 +46,11 @@
     <button id="saveBtn">💾 Sauvegarder</button>
     <button id="cancelBtn">❌ Annuler</button>
     <button id="exportBtn">📁 Export CSV</button>
+    <input type="file" id="importInput" accept=".csv" />
+  </section>
+
+  <section id="searchSection">
+    <input type="search" id="searchInput" placeholder="Rechercher une note ou un jour..." />
   </section>
 
   <footer>
