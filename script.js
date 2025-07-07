@@ -1,17 +1,12 @@
-/* script.js */
-
 // Configuration initiale
 const defaultSettings = {
   planningName: "Mon planning",
   weeklyQuota: 35,
-  firstDay: 1, // Lundi
+  firstDay: 1 // Lundi
 };
 let settings = { ...defaultSettings };
+let savedData = {}; // Données du planning
 
-// Sauvegarde manuelle
-let savedData = {};
-
-// Utilitaires
 const joursFeries = {
   "2025-01-01": "Jour de l'an",
   "2025-04-21": "Lundi de Pâques",
@@ -30,26 +25,17 @@ function formatDate(date) {
   return date.toISOString().split("T")[0];
 }
 
-function createSelectOptions(select, options, selectedValue) {
-  select.innerHTML = "";
-  options.forEach((opt, idx) => {
-    const option = document.createElement("option");
-    option.value = idx;
-    option.textContent = opt;
-    if (idx === selectedValue) option.selected = true;
-    select.appendChild(option);
-  });
+function parseTimeToHours(start, end) {
+  if (!start || !end) return 0;
+  const [sh, sm] = start.split(":").map(Number);
+  const [eh, em] = end.split(":").map(Number);
+  return Math.max(0, (eh * 60 + em - sh * 60 - sm) / 60);
 }
 
-function createDayElement(date, dayName) {
-  const dayDiv = document.createElement("div");
-  dayDiv.className = "day";
-  const isoDate = formatDate(date);
-
-  const isHoliday = joursFeries[isoDate];
-  const dayId = isoDate;
-
-  const stored = savedData[dayId] || {
+function createDayElement(date) {
+  const iso = formatDate(date);
+  const isHoliday = joursFeries[iso];
+  const dayData = savedData[iso] || {
     start: "",
     end: "",
     worked: !isHoliday,
@@ -57,133 +43,97 @@ function createDayElement(date, dayName) {
     absence: false
   };
 
-  const isDisabled = !stored.worked && !stored.paidLeave;
-
-  if (isHoliday && !stored.worked) dayDiv.classList.add("disabled");
+  const div = document.createElement("div");
+  div.className = "day";
+  if (isHoliday && !dayData.worked) div.classList.add("disabled");
 
   const label = document.createElement("h3");
-  label.textContent = `${dayName} ${date.getDate()}/${date.getMonth() + 1}`;
-  dayDiv.appendChild(label);
+  label.textContent = `${date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}`;
+  div.appendChild(label);
 
   if (isHoliday) {
-    const holidayInfo = document.createElement("p");
-    holidayInfo.textContent = joursFeries[isoDate];
-    holidayInfo.style.fontStyle = "italic";
-    dayDiv.appendChild(holidayInfo);
+    const p = document.createElement("p");
+    p.textContent = joursFeries[iso];
+    p.style.fontStyle = "italic";
+    div.appendChild(p);
   }
 
   const startInput = document.createElement("input");
   startInput.type = "time";
-  startInput.value = stored.start;
-  startInput.disabled = isDisabled;
+  startInput.value = dayData.start;
 
   const endInput = document.createElement("input");
   endInput.type = "time";
-  endInput.value = stored.end;
-  endInput.disabled = isDisabled;
+  endInput.value = dayData.end;
 
   const workedCheckbox = document.createElement("input");
   workedCheckbox.type = "checkbox";
-  workedCheckbox.checked = stored.worked;
-  workedCheckbox.id = `worked-${dayId}`;
+  workedCheckbox.checked = dayData.worked;
 
   const paidLeaveCheckbox = document.createElement("input");
   paidLeaveCheckbox.type = "checkbox";
-  paidLeaveCheckbox.checked = stored.paidLeave;
-  paidLeaveCheckbox.id = `leave-${dayId}`;
+  paidLeaveCheckbox.checked = dayData.paidLeave;
 
   const absenceCheckbox = document.createElement("input");
   absenceCheckbox.type = "checkbox";
-  absenceCheckbox.checked = stored.absence;
-  absenceCheckbox.id = `absence-${dayId}`;
+  absenceCheckbox.checked = dayData.absence;
 
-  const hoursDisplay = document.createElement("p");
-  hoursDisplay.textContent = "0h";
+  const hoursP = document.createElement("p");
 
-  function updateDisplay() {
-    let duration = 0;
-    if (paidLeaveCheckbox.checked) {
-      duration = 7;
-    } else if (workedCheckbox.checked && startInput.value && endInput.value) {
-      const [sh, sm] = startInput.value.split(":").map(Number);
-      const [eh, em] = endInput.value.split(":").map(Number);
-      duration = (eh * 60 + em - sh * 60 - sm) / 60;
-    }
-    hoursDisplay.textContent = duration.toFixed(2) + "h";
-  }
-
-  function updateState() {
+  function updateFields() {
     const worked = workedCheckbox.checked;
-    const paidLeave = paidLeaveCheckbox.checked;
+    const leave = paidLeaveCheckbox.checked;
     const absence = absenceCheckbox.checked;
 
-    if (paidLeave) {
+    if (leave) {
       workedCheckbox.checked = false;
       absenceCheckbox.checked = false;
     } else if (absence) {
-      paidLeaveCheckbox.checked = false;
       workedCheckbox.checked = false;
+      paidLeaveCheckbox.checked = false;
     } else if (worked) {
       paidLeaveCheckbox.checked = false;
       absenceCheckbox.checked = false;
     }
 
-    const disabled = !(workedCheckbox.checked || paidLeaveCheckbox.checked);
-    startInput.disabled = disabled;
-    endInput.disabled = disabled;
+    startInput.disabled = !(workedCheckbox.checked);
+    endInput.disabled = !(workedCheckbox.checked);
 
-    updateDisplay();
+    const hours = paidLeaveCheckbox.checked
+      ? 7
+      : workedCheckbox.checked
+        ? parseTimeToHours(startInput.value, endInput.value)
+        : 0;
+
+    hoursP.textContent = `Heures : ${hours.toFixed(2)}h`;
+
+    savedData[iso] = {
+      start: startInput.value,
+      end: endInput.value,
+      worked: workedCheckbox.checked,
+      paidLeave: paidLeaveCheckbox.checked,
+      absence: absenceCheckbox.checked
+    };
+
+    calculateTotals();
   }
 
-  [startInput, endInput, workedCheckbox, paidLeaveCheckbox, absenceCheckbox].forEach(el =>
-    el.addEventListener("input", updateState)
+  [startInput, endInput, workedCheckbox, paidLeaveCheckbox, absenceCheckbox].forEach(input =>
+    input.addEventListener("input", updateFields)
   );
 
-  updateDisplay();
-  updateState();
+  updateFields();
 
-  dayDiv.appendChild(document.createTextNode("Début : "));
-  dayDiv.appendChild(startInput);
-  dayDiv.appendChild(document.createTextNode(" Fin : "));
-  dayDiv.appendChild(endInput);
-  dayDiv.appendChild(document.createElement("br"));
+  div.append("Début : ", startInput, " Fin : ", endInput, document.createElement("br"));
+  div.append(workedCheckbox, " Jour travaillé ");
+  div.append(paidLeaveCheckbox, " Congé payé ");
+  div.append(absenceCheckbox, " Absence autre ");
+  div.appendChild(hoursP);
 
-  dayDiv.appendChild(workedCheckbox);
-  dayDiv.appendChild(document.createTextNode(" Jour travaillé "));
-
-  dayDiv.appendChild(paidLeaveCheckbox);
-  dayDiv.appendChild(document.createTextNode(" Congé payé "));
-
-  dayDiv.appendChild(absenceCheckbox);
-  dayDiv.appendChild(document.createTextNode(" Absence autre "));
-
-  dayDiv.appendChild(hoursDisplay);
-  dayDiv.dataset.date = isoDate;
-
-  return dayDiv;
+  return div;
 }
 
-function renderWeek(startDate) {
-  const view = document.getElementById("weeklyView");
-  view.innerHTML = "";
-
-  const days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-  const week = [];
-
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(startDate);
-    d.setDate(startDate.getDate() + i);
-    week.push(d);
-  }
-
-  week.forEach(date => {
-    const dayName = days[date.getDay()];
-    const dayEl = createDayElement(date, dayName);
-    view.appendChild(dayEl);
-  });
-}
-
-function getCurrentWeekStart(date = new Date()) {
+function getWeekStart(date) {
   const d = new Date(date);
   const day = d.getDay();
   const diff = (day - settings.firstDay + 7) % 7;
@@ -191,15 +141,150 @@ function getCurrentWeekStart(date = new Date()) {
   return d;
 }
 
-// Initialisation
-function init() {
-  // Charger paramètres
-  Object.assign(settings, JSON.parse(localStorage.getItem("settings")) || {});
-  document.getElementById("planningName").textContent = settings.planningName;
+function renderWeek(date) {
+  const weekStart = getWeekStart(date);
+  const weeklyView = document.getElementById("weeklyView");
+  weeklyView.innerHTML = "";
 
-  const now = new Date();
-  const startOfWeek = getCurrentWeekStart(now);
-  renderWeek(startOfWeek);
+  for (let i = 0; i < 7; i++) {
+    const current = new Date(weekStart);
+    current.setDate(weekStart.getDate() + i);
+    const el = createDayElement(current);
+    weeklyView.appendChild(el);
+  }
+
+  localStorage.setItem("lastWeek", weekStart.toISOString());
 }
 
-document.addEventListener("DOMContentLoaded", init);
+function populateSelectors() {
+  const now = new Date();
+  const monthSelect = document.getElementById("monthSelect");
+  const yearSelect = document.getElementById("yearSelect");
+
+  const months = [...Array(12).keys()].map(m => new Date(2000, m).toLocaleString("fr-FR", { month: "long" }));
+  months.forEach((m, i) => {
+    const opt = new Option(m, i);
+    if (i === now.getMonth()) opt.selected = true;
+    monthSelect.appendChild(opt);
+  });
+
+  for (let y = 2023; y <= 2030; y++) {
+    const opt = new Option(y, y);
+    if (y === now.getFullYear()) opt.selected = true;
+    yearSelect.appendChild(opt);
+  }
+
+  function updateView() {
+    const d = new Date(yearSelect.value, monthSelect.value, 1);
+    renderWeek(getWeekStart(d));
+  }
+
+  monthSelect.addEventListener("change", updateView);
+  yearSelect.addEventListener("change", updateView);
+}
+
+function calculateTotals() {
+  let weekly = 0, monthly = 0, yearly = 0, workedDays = 0;
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  for (const [dateStr, data] of Object.entries(savedData)) {
+    const d = new Date(dateStr);
+    let hours = 0;
+    if (data.paidLeave) hours = 7;
+    else if (data.worked) hours = parseTimeToHours(data.start, data.end);
+
+    if (data.paidLeave || data.worked) workedDays++;
+
+    if (d.getFullYear() === currentYear) {
+      yearly += hours;
+      if (d.getMonth() === currentMonth) monthly += hours;
+    }
+  }
+
+  // recalculer la semaine visible
+  const dayEls = document.querySelectorAll("#weeklyView .day");
+  dayEls.forEach(day => {
+    const date = day.dataset.date;
+    const d = new Date(date);
+    const data = savedData[date];
+    if (data) {
+      if (data.paidLeave) weekly += 7;
+      else if (data.worked) weekly += parseTimeToHours(data.start, data.end);
+    }
+  });
+
+  document.getElementById("weeklyTotal").textContent = `${weekly.toFixed(2)}h`;
+  document.getElementById("monthlyTotal").textContent = `${monthly.toFixed(2)}h`;
+  document.getElementById("yearlyTotal").textContent = `${yearly.toFixed(2)}h`;
+  document.getElementById("workedDays").textContent = workedDays;
+}
+
+function savePlanning() {
+  localStorage.setItem("planningData", JSON.stringify(savedData));
+  localStorage.setItem("settings", JSON.stringify(settings));
+  alert("Planning sauvegardé !");
+}
+
+function cancelChanges() {
+  const lastSaved = JSON.parse(localStorage.getItem("planningData")) || {};
+  savedData = lastSaved;
+  const d = new Date(document.getElementById("yearSelect").value, document.getElementById("monthSelect").value, 1);
+  renderWeek(getWeekStart(d));
+}
+
+function exportCSV() {
+  let csv = "Date,Début,Fin,Travail,Congé payé,Absence\n";
+  for (const [date, d] of Object.entries(savedData)) {
+    csv += `${date},${d.start},${d.end},${d.worked ? "Oui" : "Non"},${d.paidLeave ? "Oui" : "Non"},${d.absence ? "Oui" : "Non"}\n`;
+  }
+  const blob = new Blob([csv], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "planning.csv";
+  link.click();
+}
+
+function initSettingsDialog() {
+  const btn = document.getElementById("settingsBtn");
+  const dialog = document.getElementById("settingsDialog");
+
+  btn.addEventListener("click", () => {
+    document.getElementById("planningTitleInput").value = settings.planningName;
+    document.getElementById("weeklyQuotaInput").value = settings.weeklyQuota;
+    document.getElementById("firstDaySelect").value = settings.firstDay;
+    dialog.showModal();
+  });
+
+  dialog.addEventListener("close", () => {
+    if (dialog.returnValue === "confirm") {
+      settings.planningName = document.getElementById("planningTitleInput").value;
+      settings.weeklyQuota = parseInt(document.getElementById("weeklyQuotaInput").value, 10);
+      settings.firstDay = parseInt(document.getElementById("firstDaySelect").value, 10);
+      document.getElementById("planningName").textContent = settings.planningName;
+      renderWeek(getWeekStart(new Date()));
+    } else if (dialog.returnValue === "default") {
+      settings = { ...defaultSettings };
+      document.getElementById("planningName").textContent = settings.planningName;
+      renderWeek(getWeekStart(new Date()));
+    }
+  });
+}
+
+// Initialisation
+document.addEventListener("DOMContentLoaded", () => {
+  settings = { ...defaultSettings, ...JSON.parse(localStorage.getItem("settings")) };
+  savedData = JSON.parse(localStorage.getItem("planningData")) || {};
+  document.getElementById("planningName").textContent = settings.planningName;
+
+  populateSelectors();
+  const lastDate = localStorage.getItem("lastWeek");
+  renderWeek(getWeekStart(lastDate ? new Date(lastDate) : new Date()));
+
+  initSettingsDialog();
+
+  document.getElementById("saveBtn").addEventListener("click", savePlanning);
+  document.getElementById("cancelBtn").addEventListener("click", cancelChanges);
+  document.getElementById("exportBtn").addEventListener("click", exportCSV);
+});
