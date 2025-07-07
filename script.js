@@ -111,9 +111,15 @@ function creerJour(date, data = {}) {
   cp.addEventListener("change", () => { if (cp.checked) ct.checked = false; majInputs(); calculer(); });
   times.forEach(i=>i.addEventListener("change", calculer));
 
+  const note = document.createElement("textarea");
+  note.className = "note";
+  note.placeholder = "Note...";
+  note.value = data.note || "";
+  div.appendChild(note);
+
   majInputs();
   return div;
-}
+  }
 
 function charger() {
   planningEl.innerHTML = "";
@@ -160,7 +166,7 @@ function remplirSelect(){
 
 function exportCSV(){
   const l = getDateDuLundi(semaineOffset);
-  const rows = [["Jour","Date","Début matin","Fin matin","AM début","AM fin","Total","Trav","Congé"]];
+  const rows = [["Jour","Date","Début matin","Fin matin","AM début","AM fin","Total","Trav","Congé","Note"]];
   document.querySelectorAll(".day").forEach((d,i)=>{
     const vals = ["debutMatin","finMatin","debutAprem","finAprem"]
       .map(cl=>d.querySelector("."+cl).value);
@@ -171,6 +177,7 @@ function exportCSV(){
       d.querySelector(".totalJour").textContent,
       d.querySelector(".jourTravaille").checked?"Oui":"Non",
       d.querySelector(".congePaye").checked?"Oui":"Non"
+      (d.querySelector(".note")?.value || "").replace(/[\r\n]+/g, " ")
     ]);
   });
   const csv = rows.map(r=>r.join(";")).join("\n");
@@ -208,6 +215,42 @@ annulerBtn.addEventListener("click", () => {
   if (confirm("Annuler la saisie en cours ? Les données non sauvegardées seront perdues.")) {
     charger();
   }
+});
+
+document.getElementById("importCSV").addEventListener("change", function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const lignes = e.target.result.split("\n").filter(Boolean);
+    const [entete, ...donnees] = lignes.map(l => l.split(";"));
+    if (entete.length < 9) {
+      alert("Format CSV invalide.");
+      return;
+    }
+
+    const lundi = getDateDuLundi(semaineOffset);
+    const semaineData = [];
+
+    donnees.forEach(row => {
+      if (row.length < 9) return;
+      semaineData.push({
+        matinDebut: row[2] || "",
+        matinFin: row[3] || "",
+        apremDebut: row[4] || "",
+        apremFin: row[5] || "",
+        jourTravaille: row[7]?.toLowerCase() === "oui",
+        congePaye: row[8]?.toLowerCase() === "oui",
+        note: row[9] || ""
+      });
+    });
+
+    saveWeek(lundi, semaineData);
+    charger();
+    alert("CSV importé avec succès !");
+  };
+  reader.readAsText(file);
 });
 
 remplirSelect();
