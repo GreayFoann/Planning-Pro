@@ -204,7 +204,7 @@ sauvegarderBtn.addEventListener("click", () => {
     apremDebut: d.querySelector(".debutAprem").value,
     apremFin: d.querySelector(".finAprem").value,
     jourTravaille: d.querySelector(".jourTravaille").checked,
-    congePaye: d.querySelector(".congePaye").checked
+    congePaye: d.querySelector(".congePaye").checked,
     note: d.querySelector(".note").value
   }));
   saveWeek(lundi, data);
