@@ -3,78 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Planning hebdomadaire</title>
+  <title>Planning Hebdomadaire - 35h</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1 id="planningName">Mon planning</h1>
-    <div class="theme-controls">
-      <label for="themeSelect">Thème :</label>
-      <select id="themeSelect">
-        <option value="auto">Auto</option>
-        <option value="light">Clair</option>
-        <option value="dark">Sombre</option>
-      </select>
-    </div>
-    <button id="settingsBtn">⚙️ Paramètres</button>
+  <header class="top-bar">
+    <button id="toggleTheme" aria-label="Changer de thème">🌙</button>
   </header>
 
-  <section id="controls">
-    <label for="monthSelect">Mois :</label>
-    <select id="monthSelect"></select>
+  <main>
+    <h1>Planning Hebdomadaire</h1>
 
-    <label for="yearSelect">Année :</label>
-    <select id="yearSelect"></select>
+    <div class="select-date">
+      <label for="mois">Mois :</label>
+      <select id="mois"></select>
 
-    <button id="prevWeek">← Semaine précédente</button>
-    <button id="nextWeek">Semaine suivante →</button>
-  </section>
+      <label for="annee">Année :</label>
+      <select id="annee"></select>
 
-  <section id="weeklyView"></section>
+      <button class="arrow-button" onclick="allerAuMois()">Go</button>
+    </div>
 
-  <section id="summary">
-    <h2>Récapitulatif</h2>
-    <p><strong>Total semaine :</strong> <span id="weeklyTotal">0h</span></p>
-    <p><strong>Quota semaine :</strong> <span id="weeklyQuotaDisplay">35h</span></p>
-    <p><strong>Total mois :</strong> <span id="monthlyTotal">0h</span></p>
-    <p><strong>Total année :</strong> <span id="yearlyTotal">0h</span></p>
-    <p><strong>Jours travaillés :</strong> <span id="workedDays">0</span></p>
-  </section>
+    <div class="week-nav">
+      <button class="arrow-button" onclick="changerSemaine(-1)">⬅️</button>
+      <span id="periodeSemaine"></span>
+      <button class="arrow-button" onclick="changerSemaine(1)">➡️</button>
+    </div>
 
-  <section id="actions">
-    <button id="saveBtn">💾 Sauvegarder</button>
-    <button id="cancelBtn">❌ Annuler</button>
-    <button id="exportBtn">📁 Export CSV</button>
-    <input type="file" id="importInput" accept=".csv" />
-  </section>
+    <div class="actions-semaine">
+      <button id="sauvegarder">💾 Sauvegarder</button>
+      <button id="annuler">❌ Annuler</button>
+    </div>
 
-  <section id="searchSection">
-    <input type="search" id="searchInput" placeholder="Rechercher une note ou un jour..." />
-  </section>
+    <div id="planning"></div>
 
-  <footer>
-    <p>&copy; 2025 <span class="signature">Aymerik G.</span></p>
-  </footer>
+    <section class="totaux">
+      <p><strong>Total effectué :</strong> <span id="totalEffectue">0h00min</span></p>
+      <p><strong>Heures restantes :</strong> <span id="reste">35h00min</span></p>
+      <button onclick="exportCSV()">📤 Exporter en CSV</button>
+      <input type="file" id="importCSV" accept=".csv" style="display:none" />
+      <button onclick="document.getElementById('importCSV').click()">📥 Importer CSV</button>
+    </section>
 
-  <dialog id="settingsDialog">
-    <form method="dialog">
-      <h2>Paramètres</h2>
-      <label>Nom du planning : <input type="text" id="planningTitleInput" /></label><br/>
-      <label>Quota hebdomadaire (h) : <input type="number" id="weeklyQuotaInput" min="0" /></label><br/>
-      <label>Premier jour de la semaine :
-        <select id="firstDaySelect">
-          <option value="1">Lundi</option>
-          <option value="0">Dimanche</option>
-        </select>
-      </label><br/>
-      <menu>
-        <button value="cancel">Annuler</button>
-        <button value="default">Réinitialiser</button>
-        <button value="confirm">Confirmer</button>
-      </menu>
-    </form>
-  </dialog>
+    <div class="signature">Aymerik G.</div>
+  </main>
 
   <script src="script.js"></script>
 </body>

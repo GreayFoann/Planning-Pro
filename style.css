@@ -1,61 +1,233 @@
 :root {
-  --bg: #fff;
+  --primary: #333;
+  --background: #fff;
   --text: #000;
-  --accent: #0077cc;
-  --disabled: #ccc;
+  --accent: #007bff;
+  --border: #ccc;
+  --ferie-bg: #f8d7da;
+  --ferie-text: #721c24;
 }
-[data-theme="dark"] {
-  --bg: #121212;
-  --text: #f0f0f0;
-  --accent: #3399ff;
-  --disabled: #444;
+
+body.dark {
+  --primary: #ccc;
+  --background: #121212;
+  --text: #eee;
+  --accent: #0d6efd;
+  --border: #444;
+  --ferie-bg: #5c2c31;
+  --ferie-text: #f5c6cb;
 }
+
 body {
-  font-family: sans-serif;
-  background-color: var(--bg);
-  color: var(--text);
+  font-family: Arial, sans-serif;
   margin: 0;
-  padding: 1em;
+  padding: 0;
+  background: var(--background);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
 }
-header {
+
+header.top-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
+  padding: 0.5rem;
+  background: var(--primary);
+}
+
+#toggleTheme {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text);
+}
+
+main {
+  padding: 1rem;
+  max-width: 900px;
+  margin: auto;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.select-date {
+  display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
 }
+
+.select-date select,
+.select-date button {
+  padding: 0.4rem;
+  font-size: 1rem;
+}
+
+.week-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+#periodeSemaine {
+  font-weight: bold;
+  font-size: 1rem;
+  white-space: nowrap;
+  min-width: 120px;
+}
+
+.arrow-button {
+  padding: 0.4rem 0.8rem;
+  background-color: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.arrow-button:hover {
+  opacity: 0.9;
+}
+
+#planning {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
 .day {
-  border: 1px solid var(--accent);
-  padding: 1em;
-  margin: 1em 0;
-  background-color: #f9f9f9;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  background: var(--background);
+  transition: background 0.3s;
 }
-[data-theme="dark"] .day {
-  background-color: #1e1e1e;
+
+.day.ferie {
+  background-color: var(--ferie-bg);
+  color: var(--ferie-text);
 }
-.disabled {
-  background-color: var(--disabled);
+
+.day h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
 }
-footer {
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.inputs label {
+  font-weight: bold;
+}
+
+.inputs input[type="time"] {
+  padding: 0.3rem;
+  font-size: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--background);
+  color: var(--text);
+}
+
+.checkboxes {
+  margin-top: 0.5rem;
+}
+
+.checkboxes label {
+  margin-right: 1rem;
+  font-size: 0.95rem;
+}
+
+.total {
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+
+.totaux {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.totaux p {
+  margin: 0.3rem 0;
+  font-size: 1.1rem;
+}
+
+.totaux button {
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.totaux button:hover {
+  opacity: 0.9;
+}
+
+.signature {
+  margin-top: 3rem;
   text-align: right;
-  margin-top: 2em;
   font-style: italic;
+  font-size: 0.9rem;
+  color: var(--text);
 }
-input[type="time"],
-input[type="text"],
-textarea {
-  margin: 0.3em;
+
+.actions-semaine {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1rem 0;
 }
-textarea {
+
+.actions-semaine button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--accent);
+  color: white;
+  cursor: pointer;
+}
+
+.actions-semaine button:hover {
+  opacity: 0.9;
+}
+
+.noteBloc {
+  margin-top: 0.5em;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.noteBloc label {
+  font-weight: bold;
+  margin-bottom: 0.2em;
+}
+
+.noteBloc textarea.note {
   width: 100%;
-  height: 60px;
-}
-#weeklyView {
-  margin-top: 1em;
-}
-#actions button, #controls button {
-  margin: 0.3em;
-}
-#summary {
-  border-top: 1px solid var(--accent);
-  margin-top: 2em;
-  padding-top: 1em;
+  max-width: 250px; /* ou la largeur de tes champs horaires */
+  resize: vertical;
+  height: 2.5em; /* réduit la hauteur visible */
+  font-size: 0.9em;
+  padding: 0.3em;
 }
