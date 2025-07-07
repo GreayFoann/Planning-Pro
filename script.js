@@ -93,6 +93,10 @@ function creerJour(date, data = {}) {
       <label><input type="checkbox" class="congePaye" ${conge?"checked":""}/> Congé payé</label>
     </div>
     <div class="total">Total : <span class="totalJour">0h00min</span></div>
+    <div class="noteBloc">
+      <label>Note :</label>
+      <textarea class="note" rows="2" placeholder="Ajouter une note...">${data.note || ""}</textarea>
+    </div>
   `;
   const ct = div.querySelector(".jourTravaille");
   const cp = div.querySelector(".congePaye");
@@ -194,6 +198,7 @@ sauvegarderBtn.addEventListener("click", () => {
     apremFin: d.querySelector(".finAprem").value,
     jourTravaille: d.querySelector(".jourTravaille").checked,
     congePaye: d.querySelector(".congePaye").checked
+    note: d.querySelector(".note").value
   }));
   saveWeek(lundi, data);
   alert("Semaine sauvegardée !");
