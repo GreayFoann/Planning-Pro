@@ -1,55 +1,61 @@
+:root {
+  --bg: #fff;
+  --text: #000;
+  --accent: #0077cc;
+  --disabled: #ccc;
+}
+[data-theme="dark"] {
+  --bg: #121212;
+  --text: #f0f0f0;
+  --accent: #3399ff;
+  --disabled: #444;
+}
 body {
-  font-family: Arial, sans-serif;
+  font-family: sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
   margin: 0;
   padding: 1em;
-  background: #f9f9f9;
-  color: #333;
 }
-header, footer {
+header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-header h1 {
-  margin: 0;
-}
-#controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5em;
-  margin: 1em 0;
-}
-#weeklyView {
-  margin-bottom: 1em;
-}
 .day {
-  border: 1px solid #ccc;
+  border: 1px solid var(--accent);
   padding: 1em;
-  margin-bottom: 1em;
-  background: #fff;
+  margin: 1em 0;
+  background-color: #f9f9f9;
 }
-.day.disabled {
-  background: #eee;
-  color: #aaa;
+[data-theme="dark"] .day {
+  background-color: #1e1e1e;
+}
+.disabled {
+  background-color: var(--disabled);
 }
 footer {
-  margin-top: 2em;
-  font-size: 0.9em;
   text-align: right;
+  margin-top: 2em;
+  font-style: italic;
 }
-.signature {
-  float: right;
+input[type="time"],
+input[type="text"],
+textarea {
+  margin: 0.3em;
 }
-#summary {
-  background: #e8f4ea;
-  padding: 1em;
-  border-radius: 6px;
+textarea {
+  width: 100%;
+  height: 60px;
 }
-#actions {
+#weeklyView {
   margin-top: 1em;
 }
-@media (max-width: 600px) {
-  #controls {
-    flex-direction: column;
-  }
+#actions button, #controls button {
+  margin: 0.3em;
+}
+#summary {
+  border-top: 1px solid var(--accent);
+  margin-top: 2em;
+  padding-top: 1em;
 }
