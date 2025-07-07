@@ -210,3 +210,12 @@ h1 {
 .actions-semaine button:hover {
   opacity: 0.9;
 }
+
+.noteBloc {
+  margin-top: 10px;
+}
+
+.noteBloc textarea {
+  width: 100%;
+  resize: vertical;
+}
