@@ -212,10 +212,22 @@ h1 {
 }
 
 .noteBloc {
-  margin-top: 10px;
+  margin-top: 0.5em;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.noteBloc textarea {
+.noteBloc label {
+  font-weight: bold;
+  margin-bottom: 0.2em;
+}
+
+.noteBloc textarea.note {
   width: 100%;
+  max-width: 250px; /* ou la largeur de tes champs horaires */
   resize: vertical;
+  height: 2.5em; /* réduit la hauteur visible */
+  font-size: 0.9em;
+  padding: 0.3em;
 }
