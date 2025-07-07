@@ -170,7 +170,7 @@ function exportCSV(){
       ...vals,
       d.querySelector(".totalJour").textContent,
       d.querySelector(".jourTravaille").checked?"Oui":"Non",
-      d.querySelector(".congePaye").checked?"Oui":"Non"
+      d.querySelector(".congePaye").checked?"Oui":"Non",
       (d.querySelector(".note")?.value || "").replace(/[\r\n]+/g, " ")
     ]);
   });
