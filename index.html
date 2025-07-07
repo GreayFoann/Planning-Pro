@@ -41,6 +41,8 @@
       <p><strong>Total effectué :</strong> <span id="totalEffectue">0h00min</span></p>
       <p><strong>Heures restantes :</strong> <span id="reste">35h00min</span></p>
       <button onclick="exportCSV()">📤 Exporter en CSV</button>
+      <input type="file" id="importCSV" accept=".csv" style="display:none" />
+      <button onclick="document.getElementById('importCSV').click()">📥 Importer CSV</button>
     </section>
 
     <div class="signature">Aymerik G.</div>
