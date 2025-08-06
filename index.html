@@ -12,7 +12,7 @@
   </header>
 
   <main>
-    <h1>Planning Hebdomadaire</h1>
+    <h1 id="planningName">Planning Hebdomadaire</h1>
 
     <div class="select-date">
       <label for="mois">Mois :</label>
@@ -26,7 +26,7 @@
 
     <div class="week-nav">
       <button class="arrow-button" onclick="changerSemaine(-1)">⬅️</button>
-      <span id="periodeSemaine"></span>
+      <span id="periodeSemaine">Semaine du ... au ...</span>
       <button class="arrow-button" onclick="changerSemaine(1)">➡️</button>
     </div>
 
@@ -40,14 +40,16 @@
     <section class="totaux">
       <p><strong>Total effectué :</strong> <span id="totalEffectue">0h00min</span></p>
       <p><strong>Heures restantes :</strong> <span id="reste">35h00min</span></p>
-      <button onclick="exportCSV()">📤 Exporter en CSV</button>
-      <input type="file" id="importCSV" accept=".csv" style="display:none" />
-      <button onclick="document.getElementById('importCSV').click()">📥 Importer CSV</button>
+
+      <button onclick="exportExcel()">📤 Exporter en Excel</button>
+      <input type="file" id="importExcel" accept=".xlsx" style="display:none" />
+      <button onclick="document.getElementById('importExcel').click()">📥 Importer Excel</button>
     </section>
 
     <div class="signature">Aymerik G.</div>
   </main>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
